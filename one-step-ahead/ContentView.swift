@@ -8,14 +8,31 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var viewModel = WaterViewModel()
+    @State var test = ""
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            TextField("8 oz", text: $viewModel.amtStr)
+            Button("save"){
+                viewModel.saveWater()
+            }
+            waterHistory
+        }
+        .onAppear {
+            viewModel.fetchCurrWater()
+            viewModel.fetchWaterHistory()
         }
         .padding()
+    }
+    
+    var waterHistory: some View {
+        VStack(alignment: .leading) {
+            Text("Water History")
+            ForEach(viewModel.waterHistory) { water in
+                Text("\(viewModel.dateFormater(water.date))")
+                Text("\(water.amountDrank/water.goal)")
+            }
+        }
     }
 }
 
