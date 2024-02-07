@@ -1,0 +1,36 @@
+//
+//  MainView.swift
+//  one-step-ahead
+//
+//  Created by michelle on 2/6/24.
+//
+
+import SwiftUI
+
+struct MainView: View {
+    var body: some View {
+        TabView {
+            ExerciseView()
+                .tabItem {
+                    Image(systemName: "figure.walk")
+                    Text("exercise")
+                }
+            WaterView()
+                .tabItem {
+                    Image(systemName: "drop.fill")
+                    Text("water")
+                }
+            SleepView()
+                .tabItem {
+                    Image(systemName: "moon.zzz.fill")
+                    Text("sleep")
+                }
+        }
+    }
+}
+
+struct MainView_Previews: PreviewProvider {
+    static var previews: some View {
+        MainView()
+    }
+}

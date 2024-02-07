@@ -1,1 +1,7 @@
 GoogleService-Info.plist
+### SwiftPM ###
+Packages
+.build/
+xcuserdata
+DerivedData/
+*.xcodeproj

@@ -23,7 +23,7 @@ struct one_step_aheadApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
         }
     }
 }

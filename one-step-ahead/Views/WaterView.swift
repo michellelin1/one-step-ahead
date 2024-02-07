@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct WaterView: View {
     @ObservedObject var viewModel = WaterViewModel()
     @State var test = ""
     var body: some View {
@@ -51,6 +51,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        WaterView()
     }
 }
