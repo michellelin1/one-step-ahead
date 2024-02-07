@@ -60,5 +60,23 @@ class WaterViewModel: ObservableObject {
         dateFormatter.dateFormat = "MM-dd-yyyy"
         return dateFormatter.string(from: date)
     }
-
+    
+    func getTruncatedWaterValueString(_ value: Float) -> String {
+        let truncatedWaterString = String(format: "%.2f", value)
+        return truncatedWaterString
+    }
+    
+    func getGoalMetOrUnmetString(dailyWater water: Water) -> String {
+        let goalStatus = water.amountDrank / water.goal
+        if (goalStatus >= 1) {
+            return "Goal met :)"
+        } else {
+            return "Goal not met :("
+        }
+    }
+    
+    func wasGoalMet(dailyWater water: Water) -> Bool {
+        return (water.amountDrank / water.goal) >= 1
+    }
+    
 }

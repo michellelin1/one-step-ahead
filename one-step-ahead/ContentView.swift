@@ -12,8 +12,14 @@ struct ContentView: View {
     @State var test = ""
     var body: some View {
         VStack {
+            Text("Log your water intake")
+                .font(.system(size: 35))
             TextField("8 oz", text: $viewModel.amtStr)
-            Button("save"){
+                .multilineTextAlignment(.center)
+                .font(.system(size: 30))
+            // TODO: Why is it defaulting to 0.0?
+            Button("Save")
+            {
                 viewModel.saveWater()
             }
             waterHistory
@@ -26,11 +32,18 @@ struct ContentView: View {
     }
     
     var waterHistory: some View {
-        VStack(alignment: .leading) {
+        VStack() {
             Text("Water History")
+                .font(.system(size: 25))
+                .padding()
             ForEach(viewModel.waterHistory) { water in
-                Text("\(viewModel.dateFormater(water.date))")
-                Text("\(water.amountDrank/water.goal)")
+                VStack {
+                    Text("\(viewModel.dateFormater(water.date))")
+                    Text("\(viewModel.getTruncatedWaterValueString(water.amountDrank)) of \(viewModel.getTruncatedWaterValueString(water.goal)) cups")
+                    Text("\(viewModel.getGoalMetOrUnmetString(dailyWater: water))")
+                }
+                .background(viewModel.wasGoalMet(dailyWater: water) ? .green : .red)
+                .padding()
             }
         }
     }
