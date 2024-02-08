@@ -17,6 +17,7 @@ struct HealthKitView: View {
     @State private var workouts: [HKWorkout] = []
     @State private var isAuthorized: Bool = false
     @State private var caloriesBurned: Double?
+    @State private var sleep: Double?
     
     let healthStore = HKHealthStore()
     
@@ -29,8 +30,6 @@ struct HealthKitView: View {
             Text("Height: \(formattedHeight())")
                 .padding()
             Text("Biological Sex: \(formattedBiologicalSex())")
-                .padding()
-            Text("Step Count: \(stepCount)")
                 .padding()
             Text("Workouts: \(workouts.count)")
                 .padding()
@@ -94,7 +93,6 @@ struct HealthKitView: View {
             HKObjectType.characteristicType(forIdentifier: .dateOfBirth)!,
             HKObjectType.quantityType(forIdentifier: .bodyMass)!,
             HKObjectType.quantityType(forIdentifier: .height)!,
-            HKObjectType.quantityType(forIdentifier: .stepCount)!,
             HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
             HKObjectType.quantityType(forIdentifier: .bodyMassIndex)!,
             HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
@@ -133,7 +131,7 @@ struct HealthKitView: View {
         }
         
         func fetchSleepDuration() {
-            // Figure out how to get sleep
+            
         }
         
         func fetchWeight() {
