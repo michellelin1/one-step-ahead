@@ -25,6 +25,11 @@ struct MainView: View {
                     Image(systemName: "moon.zzz.fill")
                     Text("sleep")
                 }
+            HealthKitView()
+                .tabItem {
+                    Image(systemName: "person.fill")
+                    Text("profile")
+                }
         }
     }
 }
