@@ -527,6 +527,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"one-step-ahead/Preview Content\"";
+				DEVELOPMENT_TEAM = TSS26LWS2V;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app requires access to your health data to track sleep, weight, steps, and other health-related activities.";
@@ -558,6 +559,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"one-step-ahead/Preview Content\"";
+				DEVELOPMENT_TEAM = TSS26LWS2V;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app requires access to your health data to track sleep, weight, steps, and other health-related activities.";

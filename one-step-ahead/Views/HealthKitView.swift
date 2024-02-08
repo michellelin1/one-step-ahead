@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  chattest
+//  one-step-ahead
 //
 //  Created by Meggie Nguyen on 2/6/24.
 //
@@ -16,6 +16,7 @@ struct HealthKitView: View {
     @State private var stepCount: Int = 0
     @State private var workouts: [HKWorkout] = []
     @State private var isAuthorized: Bool = false
+    @State private var caloriesBurned: Double?
     
     let healthStore = HKHealthStore()
     
@@ -32,6 +33,8 @@ struct HealthKitView: View {
             Text("Step Count: \(stepCount)")
                 .padding()
             Text("Workouts: \(workouts.count)")
+                .padding()
+            Text("Calories Burned: \(formattedCalBurned())")
                 .padding()
             Button("Authorize Health Data") {
                 requestAuthorization()
@@ -54,7 +57,7 @@ struct HealthKitView: View {
     func formattedWeight() -> String {
         guard let weight = weight else { return "N/A" }
         let weightInPounds = weight
-        return String(format: "%.2f lbs", weightInPounds)
+        return String(format: "%.0f lbs", weightInPounds)
     }
     
     func formattedHeight() -> String {
@@ -76,6 +79,13 @@ struct HealthKitView: View {
             return "Unknown"
         }
     }
+        
+    func formattedCalBurned() -> String {
+        guard let caloriesBurned = caloriesBurned else { return "0" }
+        return String(format: "%.1f calories", caloriesBurned)
+    }
+
+    
     
     func checkAuthorizationStatus() {
         let healthKitTypesToRead: Set<HKObjectType> = [
@@ -85,9 +95,12 @@ struct HealthKitView: View {
             HKObjectType.quantityType(forIdentifier: .bodyMass)!,
             HKObjectType.quantityType(forIdentifier: .height)!,
             HKObjectType.quantityType(forIdentifier: .stepCount)!,
+            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+            HKObjectType.quantityType(forIdentifier: .bodyMassIndex)!,
+            HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
             HKObjectType.workoutType()
         ]
-        
+
         healthStore.requestAuthorization(toShare: nil, read: healthKitTypesToRead) { (success, error) in
             if success {
                 self.isAuthorized = true // Update authorization status
@@ -114,10 +127,13 @@ struct HealthKitView: View {
             
             // Fetch biological sex
             fetchBiologicalSex()
+        
+            // Fetch calories burned
+            fetchCaloriesBurned()
         }
         
         func fetchSleepDuration() {
-            // Implement code to fetch sleep duration
+            // Figure out how to get sleep
         }
         
         func fetchWeight() {
@@ -126,7 +142,8 @@ struct HealthKitView: View {
                     return
                 }
                 
-                let query = HKSampleQuery(sampleType: weightType, predicate: nil, limit: HKObjectQueryNoLimit, sortDescriptors: nil) { query, results, error in
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+            let query = HKSampleQuery(sampleType: weightType, predicate: nil, limit: 1, sortDescriptors: [sortDescriptor]) { query, results, error in
                     guard let weightSample = results?.first as? HKQuantitySample else {
                         if let error = error {
                             print("Failed to fetch weight sample: \(error.localizedDescription)")
@@ -146,29 +163,6 @@ struct HealthKitView: View {
                 
                 healthStore.execute(query)
             
-//            guard let weightType = HKObjectType.quantityType(forIdentifier: .bodyMass) else {
-//                    print("Body mass type is not available.")
-//                    return
-//                }
-//
-//                let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-//                let query = HKSampleQuery(sampleType: weightType, predicate: nil, limit: 1, sortDescriptors: [sortDescriptor]) { query, results, error in
-//                    guard let weightSamples = results as? [HKQuantitySample], let weightSample = weightSamples.first else {
-//                        if let error = error {
-//                            print("Failed to fetch weight data with error: \(error.localizedDescription)")
-//                        } else {
-//                            print("No weight data available.")
-//                        }
-//                        return
-//                    }
-//
-//                    // Process the most recent weight sample
-//                    let weightInKilograms = weightSample.quantity.doubleValue(for: HKUnit.gramUnit(with: .kilo))
-//                    let weightInPounds = weightInKilograms * 2.20462 // Convert kilograms to pounds
-//                    print("Most Recent Weight: \(weightInPounds) pounds")
-//                }
-//
-//                healthStore.execute(query)
         }
         
         func fetchHeight() {
@@ -207,6 +201,44 @@ struct HealthKitView: View {
         } catch {
             print("Error fetching biological sex: \(error.localizedDescription)")
         }
+    }
+    
+    func fetchCaloriesBurned() {
+        guard let caloriesBurnedType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
+            print("Active energy burned type is not available.")
+            return
+        }
+        
+        let calendar = Calendar.current
+            let now = Date()
+            let startOfDay = calendar.startOfDay(for: now)
+            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+            
+            // Create a predicate for samples within today
+            let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: endOfDay, options: .strictStartDate)
+            
+            // Create a query to retrieve calories burned samples for today
+            let query = HKStatisticsQuery(quantityType: caloriesBurnedType, quantitySamplePredicate: predicate, options: .cumulativeSum) { query, result, error in
+                guard let result = result else {
+                    if let error = error {
+                        print("Failed to fetch calories burned data with error: \(error.localizedDescription)")
+                    } else {
+                        print("No calories burned data available for today.")
+                    }
+                    return
+                }
+                DispatchQueue.main.async {
+                    if let sum = result.sumQuantity() {
+                        let caloriesBurned = sum.doubleValue(for: HKUnit.kilocalorie())
+                        self.caloriesBurned = caloriesBurned
+                    } else {
+                        print("No calories burned data available for today.")
+                    }
+                }
+
+            }
+        
+        healthStore.execute(query)
     }
 }
 
