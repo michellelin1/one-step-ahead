@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F31411F2B757EE500F33741 /* HealthKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F31411E2B757EE500F33741 /* HealthKitView.swift */; };
 		322D4B302B6DBB0C0084E091 /* one_step_aheadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322D4B2F2B6DBB0C0084E091 /* one_step_aheadApp.swift */; };
 		322D4B322B6DBB0C0084E091 /* WaterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322D4B312B6DBB0C0084E091 /* WaterView.swift */; };
 		322D4B342B6DBB0F0084E091 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 322D4B332B6DBB0F0084E091 /* Assets.xcassets */; };
@@ -50,6 +51,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1F31411B2B757E2B00F33741 /* one-step-ahead.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "one-step-ahead.entitlements"; sourceTree = "<group>"; };
+		1F31411E2B757EE500F33741 /* HealthKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitView.swift; sourceTree = "<group>"; };
+		1F3141202B757FC600F33741 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Library/Messages/Attachments/8a/10/491A0130-0BE1-48C6-8C43-9F598586C2BA/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		1F3141222B757FCD00F33741 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		322D4B2C2B6DBB0C0084E091 /* one-step-ahead.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "one-step-ahead.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		322D4B2F2B6DBB0C0084E091 /* one_step_aheadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = one_step_aheadApp.swift; sourceTree = "<group>"; };
 		322D4B312B6DBB0C0084E091 /* WaterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterView.swift; sourceTree = "<group>"; };
@@ -126,11 +131,14 @@
 		322D4B2E2B6DBB0C0084E091 /* one-step-ahead */ = {
 			isa = PBXGroup;
 			children = (
+				1F31411B2B757E2B00F33741 /* one-step-ahead.entitlements */,
 				322D4B7B2B7371130084E091 /* Auth */,
 				322D4B6A2B736AB60084E091 /* Model */,
 				322D4B692B736AA50084E091 /* ViewModel */,
+				1F3141202B757FC600F33741 /* GoogleService-Info.plist */,
 				322D4B682B736A950084E091 /* Views */,
 				322D4B592B6DC1A00084E091 /* GoogleService-Info.plist */,
+				1F3141222B757FCD00F33741 /* GoogleService-Info.plist */,
 				322D4B2F2B6DBB0C0084E091 /* one_step_aheadApp.swift */,
 				322D4B332B6DBB0F0084E091 /* Assets.xcassets */,
 				322D4B352B6DBB0F0084E091 /* Preview Content */,
@@ -171,6 +179,7 @@
 				322D4B6B2B736B8D0084E091 /* MainView.swift */,
 				322D4B6D2B736BA40084E091 /* SleepView.swift */,
 				322D4B312B6DBB0C0084E091 /* WaterView.swift */,
+				1F31411E2B757EE500F33741 /* HealthKitView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -273,7 +282,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					322D4B2B2B6DBB0C0084E091 = {
 						CreatedOnToolsVersion = 14.2;
@@ -348,6 +357,7 @@
 				322D4B322B6DBB0C0084E091 /* WaterView.swift in Sources */,
 				322D4B6E2B736BA40084E091 /* SleepView.swift in Sources */,
 				322D4B702B736BBB0084E091 /* ExerciseView.swift in Sources */,
+				1F31411F2B757EE500F33741 /* HealthKitView.swift in Sources */,
 				322D4B302B6DBB0C0084E091 /* one_step_aheadApp.swift in Sources */,
 				322D4B7D2B73714A0084E091 /* AuthHandler.swift in Sources */,
 				322D4B782B7370E40084E091 /* SleepModel.swift in Sources */,
@@ -428,6 +438,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -488,6 +499,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -511,11 +523,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "one-step-ahead/one-step-ahead.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"one-step-ahead/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app requires access to your health data to track sleep, weight, steps, and other health-related activities.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -539,11 +554,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "one-step-ahead/one-step-ahead.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"one-step-ahead/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app requires access to your health data to track sleep, weight, steps, and other health-related activities.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
