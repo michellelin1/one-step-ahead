@@ -49,7 +49,7 @@ struct WaterView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct WaterView_Previews: PreviewProvider {
     static var previews: some View {
         WaterView()
     }

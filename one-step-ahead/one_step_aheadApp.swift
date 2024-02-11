@@ -20,10 +20,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct one_step_aheadApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-
+    @StateObject var authHandler = AuthViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            MainView()
+            ContentView()
+                .environmentObject(authHandler)
         }
     }
 }
