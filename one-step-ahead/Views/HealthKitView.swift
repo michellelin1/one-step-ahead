@@ -61,8 +61,10 @@ struct HealthKitView: View {
     
     func formattedHeight() -> String {
         guard let height = height else { return "N/A" }
-        let heightInFeet = height
-        return String(format: "%.2f feet", heightInFeet)
+        let heightInFeet = floor(height / 12)
+        let heightInInches = height.truncatingRemainder(dividingBy: 12)
+            
+        return String(format: "%.0f' %.0f\"", heightInFeet, heightInInches)
     }
     
     func formattedBiologicalSex() -> String {
@@ -180,8 +182,8 @@ struct HealthKitView: View {
                     }
                     
                     DispatchQueue.main.async {
-                        let heightInFeet = heightSample.quantity.doubleValue(for: HKUnit.foot())
-                        self.height = heightInFeet
+                        let heightInInch = heightSample.quantity.doubleValue(for: HKUnit.inch())
+                        self.height = heightInInch
                         // You can then use this value as needed, such as calculating BMI.
                     }
                 }
