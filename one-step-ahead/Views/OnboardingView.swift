@@ -13,7 +13,7 @@ struct WelcomeView: View {
             VStack {
                 Text("Welcome to One Step Ahead")
                 NavigationLink(destination: OverviewView()) {
-                    Text("continue")
+                    Text("Continue")
                 }
             }
             .padding()
@@ -26,7 +26,7 @@ struct OverviewView: View {
             VStack {
                 Text("We’re dedicated to helping you live your best life by staying hydrated, active, and well rested")
                 NavigationLink(destination: GetStartedView()) {
-                    Text("continue")
+                    Text("Continue")
                 }
             }
             .padding()
@@ -38,7 +38,7 @@ struct GetStartedView: View {
             VStack {
                 Text("To start out, tell us a little about yourself and what goals you hope to achieve")
                 NavigationLink(destination: DataIntakeView()) {
-                    Text("continue")
+                    Text("Continue")
                 }
             }
             .padding()
@@ -67,13 +67,29 @@ struct DataIntakeView: View {
             }
 
             Section {
-                Button("Continue") {
+                Button("Save") {
                     // Perform action with form data
                     print("First name: \(firstName)")
                     print("Last name: \(lastName)")
                     print("Sex: \(sex)")
                     print("Birthday: \(birthday)")
+                    
                 }
+                NavigationLink(destination: OnboardingCompleteView()) {
+                    Text("Continue")
+                }
+            }
+        }
+    }
+}
+
+struct OnboardingCompleteView: View {
+    // TODO: Remove back button after reaching main page
+    var body: some View {
+        VStack {
+            Text("You're all set!")
+            NavigationLink(destination: MainView()) {
+                Text("Let's get started")
             }
         }
     }

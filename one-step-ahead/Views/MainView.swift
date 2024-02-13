@@ -10,6 +10,11 @@ import SwiftUI
 struct MainView: View {
     var body: some View {
         TabView {
+            DashboardView()
+                .tabItem {
+                    Image(systemName: "house.fill")
+                    Text("dashboard")
+                }
             ExerciseView()
                 .tabItem {
                     Image(systemName: "figure.walk")
