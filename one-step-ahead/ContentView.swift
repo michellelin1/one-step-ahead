@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var authHandler: AuthViewModel
-    // @StateObject var authHandler: AuthViewModel = AuthViewModel()
+//    @EnvironmentObject var authHandler: AuthViewModel
+     @StateObject var authHandler: AuthViewModel = AuthViewModel()
     var body: some View {
 //        Button("signout") {
 //            authHandler.signOut()
