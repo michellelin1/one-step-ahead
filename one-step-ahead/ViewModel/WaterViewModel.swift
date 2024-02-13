@@ -13,13 +13,8 @@ class WaterViewModel: ObservableObject {
     @Published var currWater: Water = Water(amountDrank: 0, goal: 3, date: Date(), uid: "uid")
     @Published var waterHistory: [Water] = []
     @Published var amtStr = ""
-    @Published var authHandler: AuthViewModel
-    private var db: Firestore
     
-    init(authHandler: AuthViewModel) {
-        self.db = Firestore.firestore()
-        self.authHandler = authHandler
-    }
+    private var db = Firestore.firestore()
     
     func fetchCurrWater() {
         Task {
