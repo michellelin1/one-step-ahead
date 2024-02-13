@@ -11,7 +11,7 @@ struct WaterView: View {
     @ObservedObject var viewModel = WaterViewModel(authHandler: AuthViewModel())
     @State var test = ""
     var body: some View {
-        VStack {
+        VStack(alignment: .center) {
             Text("Log your water intake")
                 .font(.system(size: 35))
             TextField("8 oz", text: $viewModel.amtStr)

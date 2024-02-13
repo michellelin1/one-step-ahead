@@ -9,7 +9,14 @@ import SwiftUI
 
 struct DashboardView: View {
     var body: some View {
-        Text("Dashboard!")
+        // TODO: Fetch actual name
+        VStack(alignment: .leading) {
+                Text("Welcome back, Michelle!")
+                .font(.system(size: 30))
+                .padding()
+                Spacer()
+            }
+//            .navigationBarTitle("Hello", displayMode: .inline)
     }
 }
 
