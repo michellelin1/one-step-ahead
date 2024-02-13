@@ -33,6 +33,7 @@
 		322D4B7D2B73714A0084E091 /* AuthHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322D4B7C2B73714A0084E091 /* AuthHandler.swift */; };
 		322D4B7F2B784EE80084E091 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322D4B7E2B784EE80084E091 /* ContentView.swift */; };
 		E28B16DB2B7AE318001BE1BF /* HealthKitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28B16DA2B7AE318001BE1BF /* HealthKitViewModel.swift */; };
+		E28B16DD2B7B0529001BE1BF /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28B16DC2B7B0529001BE1BF /* OnboardingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +81,7 @@
 		322D4B7C2B73714A0084E091 /* AuthHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthHandler.swift; sourceTree = "<group>"; };
 		322D4B7E2B784EE80084E091 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E28B16DA2B7AE318001BE1BF /* HealthKitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitViewModel.swift; sourceTree = "<group>"; };
+		E28B16DC2B7B0529001BE1BF /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,6 +185,7 @@
 				322D4B6D2B736BA40084E091 /* SleepView.swift */,
 				322D4B312B6DBB0C0084E091 /* WaterView.swift */,
 				1F31411E2B757EE500F33741 /* HealthKitView.swift */,
+				E28B16DC2B7B0529001BE1BF /* OnboardingView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -371,6 +374,7 @@
 				322D4B7F2B784EE80084E091 /* ContentView.swift in Sources */,
 				322D4B6C2B736B8D0084E091 /* MainView.swift in Sources */,
 				322D4B722B736BDC0084E091 /* LoginView.swift in Sources */,
+				E28B16DD2B7B0529001BE1BF /* OnboardingView.swift in Sources */,
 				322D4B672B6DC3050084E091 /* WaterModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

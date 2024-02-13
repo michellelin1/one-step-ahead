@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct WaterView: View {
-    @ObservedObject var viewModel = WaterViewModel()
+    @ObservedObject var viewModel = WaterViewModel(authHandler: AuthViewModel())
     @State var test = ""
     var body: some View {
         VStack {

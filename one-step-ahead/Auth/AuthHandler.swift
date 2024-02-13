@@ -57,4 +57,8 @@ class AuthViewModel: ObservableObject {
             errorMessage = error.localizedDescription
         }
     }
+    
+    func getUserId() -> String? {
+        return userSession?.uid
+    }
 }
