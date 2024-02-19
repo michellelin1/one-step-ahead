@@ -15,10 +15,14 @@ struct ContentView: View {
 //            authHandler.signOut()
 //        }
         Group {
-            if authHandler.userSession != nil {
-                MainView()
-            } else {
+            if authHandler.userSession == nil {
                 LoginView()
+            }
+            else if authHandler.user == nil {
+                WelcomeView()
+            }
+            else {
+                MainView()
             }
         }
     }
