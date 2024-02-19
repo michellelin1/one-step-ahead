@@ -10,9 +10,6 @@ import SwiftUI
 struct DashboardView: View {
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
     let buttonColors: [Color] = [.green, .blue, .purple, .pink]
-    @State private var showExerciseView = false
-    @State private var showWaterView = false
-    @State private var showSleepView = false
     
     var body: some View {
         NavigationView{

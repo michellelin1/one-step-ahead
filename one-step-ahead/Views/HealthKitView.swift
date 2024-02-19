@@ -13,6 +13,12 @@ struct HealthKitView: View {
     
     var body: some View {
         VStack {
+            VStack(alignment: .leading) {
+                // TODO: Fetch actual name
+                Text("First Name Last Name")
+                    .font(.system(size: 30)).bold()
+                    .padding()
+            }
             Text("Sleep Duration: \(healthKitViewModel.formattedSleepDuration())")
                 .padding()
             Text("Weight: \(healthKitViewModel.formattedWeight())")
@@ -34,6 +40,7 @@ struct HealthKitView: View {
         .onAppear {
             healthKitViewModel.checkAuthorizationStatus()
         }
+        Spacer()
     }
 }
 
