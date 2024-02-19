@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DashboardView: View {
+    @ObservedObject var userData = UserData.shared
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
     let buttonColors: [Color] = [.green, .blue, .purple, .pink]
     
@@ -16,7 +17,7 @@ struct DashboardView: View {
             VStack {
                 VStack(alignment: .leading) {
                     // TODO: Fetch actual name
-                    Text("Welcome back, Michelle!")
+                    Text("Welcome back, \(userData.firstName)!")
                         .font(.system(size: 30))
                         .padding()
                 }

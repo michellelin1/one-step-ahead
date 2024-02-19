@@ -10,12 +10,13 @@ import HealthKit
 
 struct HealthKitView: View {
     @ObservedObject var healthKitViewModel = HealthKitViewModel()
+    @ObservedObject var userData = UserData.shared
     
     var body: some View {
         VStack {
             VStack(alignment: .leading) {
                 // TODO: Fetch actual name
-                Text("First Name Last Name")
+                Text("\(userData.firstName) \(userData.lastName)")
                     .font(.system(size: 30)).bold()
                     .padding()
             }
@@ -40,7 +41,7 @@ struct HealthKitView: View {
         .onAppear {
             healthKitViewModel.checkAuthorizationStatus()
         }
-        Spacer()
+//        Spacer() // this messes the nav bar for some reason
     }
 }
 

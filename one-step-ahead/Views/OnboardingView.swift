@@ -45,9 +45,21 @@ struct GetStartedView: View {
     }
 }
 
+class UserData: ObservableObject {
+    @Published var firstName: String = ""
+    @Published var lastName: String = ""
+    
+    // Singleton instance for global access
+    static let shared = UserData()
+    
+    private init() {} // Prevent external initialization
+}
+
+
 struct DataIntakeView: View {
-    @State var firstName: String = ""
-    @State var lastName: String = ""
+    @ObservedObject var userData = UserData.shared
+//    @State var firstName: String = ""
+//    @State var lastName: String = ""
     @State private var sex = 0
     @State var birthday: Date = Date()
     let options = ["Male", "Female", "Other"]
@@ -55,8 +67,8 @@ struct DataIntakeView: View {
     var body: some View {
         Form {
             Section(header: Text("User Information")) {
-                TextField("First name", text: $firstName)
-                TextField("Last name", text: $lastName)
+                TextField("First name", text: $userData.firstName)
+                TextField("Last name", text: $userData.lastName)
                 Picker("Biological Sex", selection: $sex) {
                     ForEach(0..<options.count) { index in
                         Text(options[index]).tag(index)
@@ -69,8 +81,8 @@ struct DataIntakeView: View {
             Section {
                 Button("Save") {
                     // Perform action with form data
-                    print("First name: \(firstName)")
-                    print("Last name: \(lastName)")
+                    print("First name: \(userData.firstName)")
+                    print("Last name: \(userData.lastName)")
                     print("Sex: \(sex)")
                     print("Birthday: \(birthday)")
                     
