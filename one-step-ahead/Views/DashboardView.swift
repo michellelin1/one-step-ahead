@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct DashboardView: View {
-    @ObservedObject var userData = UserData.shared
+//    @ObservedObject var userData = UserData.shared
+    @StateObject var authHandler: AuthViewModel = AuthViewModel()
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
     let buttonColors: [Color] = [.green, .blue, .purple, .pink]
     
@@ -17,7 +18,7 @@ struct DashboardView: View {
             VStack {
                 VStack(alignment: .leading) {
                     // TODO: Fetch actual name
-                    Text("Welcome back, \(userData.firstName)!")
+                    Text("Welcome back, \(authHandler.user?.firstName ?? "User")!")
                         .font(.system(size: 30))
                         .padding()
                 }

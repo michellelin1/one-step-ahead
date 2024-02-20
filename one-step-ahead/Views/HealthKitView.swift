@@ -10,13 +10,14 @@ import HealthKit
 
 struct HealthKitView: View {
     @ObservedObject var healthKitViewModel = HealthKitViewModel()
-    @ObservedObject var userData = UserData.shared
+//    @ObservedObject var userData = UserData.shared
+    @StateObject var authHandler: AuthViewModel = AuthViewModel()
     
     var body: some View {
         VStack {
             VStack(alignment: .leading) {
                 // TODO: Fetch actual name
-                Text("\(userData.firstName) \(userData.lastName)")
+                Text("\(authHandler.user?.firstName ?? "User") \(authHandler.user?.lastName ?? "Name")")
                     .font(.system(size: 30)).bold()
                     .padding()
             }
@@ -37,11 +38,11 @@ struct HealthKitView: View {
             }
             .padding()
             .disabled(HKHealthStore.isHealthDataAvailable())
+            Spacer()
         }
         .onAppear {
             healthKitViewModel.checkAuthorizationStatus()
         }
-//        Spacer() // this messes the nav bar for some reason
     }
 }
 

@@ -45,15 +45,6 @@ struct GetStartedView: View {
     }
 }
 
-class UserData: ObservableObject {
-    @Published var firstName: String = ""
-    @Published var lastName: String = ""
-    
-    // Singleton instance for global access
-    static let shared = UserData()
-    
-    private init() {} // Prevent external initialization
-}
 
 
 struct DataIntakeView: View {
@@ -65,7 +56,7 @@ struct DataIntakeView: View {
     @State var calorieGoal = ""
     @State var sleepGoal = ""
     @State var hydrationGoal = ""
-    // @EnvironmentObject var authHandler: AuthViewModel
+//    @EnvironmentObject var authHandler: AuthViewModel
     @StateObject var authHandler: AuthViewModel = AuthViewModel()
     @State var completed = false
     
