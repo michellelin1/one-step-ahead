@@ -10,17 +10,27 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 
 class WaterViewModel: ObservableObject {
-    @Published var currWater: Water = Water(amountDrank: 0, goal: 3, date: Date(), uid: "uid")
+    @Published var currWater: Water = Water(amountDrank: 0, goal: 3, date: Calendar.current.startOfDay(for: Date()), uid: "uid")
     @Published var waterHistory: [Water] = []
     @Published var amtStr = ""
+    let today = Calendar.current.startOfDay(for: Date())
+    var uid = "uid"
+
     
     private var db = Firestore.firestore()
     
     func fetchCurrWater() {
         Task {
             do {
-                let path = "water/uid"+dateFormater(Date())
-                self.currWater = try await db.document(path).getDocument(as: Water.self)
+                let querySnapshot = try await db.collection("water")
+                                            .whereField("uid", isEqualTo: uid)
+                                            .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: today))
+                                            .limit(to: 1)
+                                            .getDocuments()
+                let water = querySnapshot.documents.first.flatMap { document in
+                    try? document.data(as: Water.self)
+                }
+                self.currWater = water ?? self.currWater
                 self.amtStr = String(currWater.amountDrank)
             } catch {
                 print(error.localizedDescription)
@@ -29,16 +39,13 @@ class WaterViewModel: ObservableObject {
     }
     
     func fetchWaterHistory() {
-        print("start fetching water")
-        
-        let today = Calendar.current.startOfDay(for: Date())
-        print(today)
-        
         Task {
             do {
                 let querySnapshot = try await db.collection("water")
-                                            .whereField("uid", isEqualTo: "uid")
+                                            .whereField("uid", isEqualTo: uid)
                                             .whereField("date", isLessThan: Timestamp(date: today))
+                                            .order(by: "date")
+                                            .limit(to: 3)
                                             .getDocuments()
                 waterHistory = try querySnapshot.documents.compactMap { document in
                     var decodedDoc = try document.data(as: Water.self)
@@ -49,15 +56,17 @@ class WaterViewModel: ObservableObject {
                 print(error.localizedDescription)
             }
         }
-        
-        print("finish fetching water")
     }
 
     func saveWater() {
         do {
             self.currWater.amountDrank = Float(amtStr) ?? self.currWater.amountDrank
-            let path = "water/uid"+dateFormater(Date())
-            try db.document(path).setData(from: currWater)
+            if self.currWater.id == nil {
+                let doc = try db.collection("water").addDocument(from: currWater)
+                self.currWater.id = doc.documentID
+            } else {
+                try db.collection("water").document(self.currWater.id ?? "failed").setData(from: currWater)
+            }
         } catch {
             print(error.localizedDescription)
         }
