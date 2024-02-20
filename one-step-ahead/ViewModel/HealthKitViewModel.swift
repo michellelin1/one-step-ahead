@@ -115,6 +115,72 @@ class HealthKitViewModel: ObservableObject {
         }
         
         func fetchSleepDuration() {
+            let sleepSampleType = HKCategoryType(.sleepAnalysis)
+            
+            let calendar = Calendar.current
+
+            // Get the current date and time
+            let currentDate = Date()
+
+            // Get the date components for yesterday
+            var yesterdayComponents = DateComponents()
+            yesterdayComponents.day = -1
+
+            // Calculate the date for yesterday
+            guard let yesterday = calendar.date(byAdding: yesterdayComponents, to: currentDate) else {
+                fatalError("Failed to calculate yesterday's date")
+            }
+
+            // Create date components for 8 PM
+            var yesterdayEightPMComponents = DateComponents()
+            yesterdayEightPMComponents.hour = 20 // 8 PM
+            yesterdayEightPMComponents.minute = 0
+            yesterdayEightPMComponents.second = 0
+
+            // Calculate the date for yesterday at 8 PM
+            guard let yesterdayEightPM = calendar.date(byAdding: yesterdayEightPMComponents, to: yesterday) else {
+                fatalError("Failed to calculate yesterday's date at 8 PM")
+            }
+            
+            
+            let sleepCategory = HKCategoryValueSleepAnalysis.asleepCore.rawValue
+            let deepSleepSample  = HKCategorySample(type: sleepSampleType,
+                                                    value:sleepCategory,
+                                                    start: yesterdayEightPM,
+                                                    end: Date())
+            
+            print("Getting sleep sample: ")
+            print(deepSleepSample)
+            print("Done getting sleep sample")
+//            self.sleepDuration = deepSleepSample
+            
+            // Prepare the query to fetch sleep data
+            let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+            let query = HKSampleQuery(sampleType: sleepType,
+                                      predicate: nil,
+                                      limit: HKObjectQueryNoLimit,
+                                      sortDescriptors: nil) { (query, results, error) in
+                guard let samples = results as? [HKCategorySample], error == nil else {
+                    if let error = error {
+                        print("Error fetching sleep data: \(error.localizedDescription)")
+                    } else {
+                        print("Failed to fetch sleep data.")
+                    }
+                    return
+                }
+                
+                // Process fetched sleep data
+                for sample in samples {
+                    let startDate = sample.startDate
+                    let endDate = sample.endDate
+                    let value = sample.value
+                    print("Sleep start: \(startDate), end: \(endDate), value: \(value)")
+                    self.sleepDuration = endDate.timeIntervalSince(startDate)
+                }
+            }
+            
+            // Execute the query
+            healthStore.execute(query)
             
         }
         

@@ -29,10 +29,16 @@ class WaterViewModel: ObservableObject {
     }
     
     func fetchWaterHistory() {
+        print("start fetching water")
+        
+        let today = Calendar.current.startOfDay(for: Date())
+        print(today)
+        
         Task {
             do {
                 let querySnapshot = try await db.collection("water")
                                             .whereField("uid", isEqualTo: "uid")
+                                            .whereField("date", isLessThan: Timestamp(date: today))
                                             .getDocuments()
                 waterHistory = try querySnapshot.documents.compactMap { document in
                     var decodedDoc = try document.data(as: Water.self)
@@ -43,6 +49,8 @@ class WaterViewModel: ObservableObject {
                 print(error.localizedDescription)
             }
         }
+        
+        print("finish fetching water")
     }
 
     func saveWater() {
