@@ -10,7 +10,6 @@ import HealthKit
 
 struct HealthKitView: View {
     @ObservedObject var healthKitViewModel = HealthKitViewModel()
-//    @ObservedObject var userData = UserData.shared
     @StateObject var authHandler: AuthViewModel = AuthViewModel()
     
     var body: some View {
@@ -43,6 +42,8 @@ struct HealthKitView: View {
         .onAppear {
             healthKitViewModel.checkAuthorizationStatus()
         }
+        
+        
     }
 }
 
