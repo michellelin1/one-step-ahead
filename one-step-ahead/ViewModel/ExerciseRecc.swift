@@ -11,7 +11,6 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class ExerciseReccView: ObservableObject {
-//    @StateObject var authHandler: AuthViewModel = AuthViewModel()
     @Published var healthKitViewModel = HealthKitViewModel()
     @Published var userSession: FirebaseAuth.User?
     @Published var cal_remaining: Float = 350.0
