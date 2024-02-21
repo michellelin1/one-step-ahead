@@ -100,9 +100,9 @@ struct DataIntakeView: View {
                     completed = authHandler.setUserData(
                         first: firstName,
                         last: lastName,
-                        water: Float(hydrationGoal) ?? 0,
-                        sleep: Float(sleepGoal) ?? 0,
-                        exercise: Float(calorieGoal) ?? 0
+                        water: Double(hydrationGoal) ?? 0,
+                        sleep: Double(sleepGoal) ?? 0,
+                        exercise: Double(calorieGoal) ?? 0
                     )
                 }
                 NavigationLink(destination: OnboardingCompleteView()) {
@@ -127,6 +127,8 @@ struct OnboardingCompleteView: View {
     }
 }
 
-#Preview {
-    WelcomeView()
+struct WelcomeView_Previews: PreviewProvider {
+    static var previews: some View {
+        WelcomeView()
+    }
 }

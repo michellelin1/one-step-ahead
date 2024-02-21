@@ -45,7 +45,7 @@ class AuthViewModel: ObservableObject {
         }
     }
     
-    func setUserData(first: String, last: String, water: Float, sleep: Float, exercise: Float) -> Bool {
+    func setUserData(first: String, last: String, water: Double, sleep: Double, exercise: Double) -> Bool {
         do {
             self.user = User(firstName: first, lastName: last, waterGoal: water, sleepGoal: sleep, exerciseGoal: exercise)
             let path = "users/" + (userSession?.uid ?? "")

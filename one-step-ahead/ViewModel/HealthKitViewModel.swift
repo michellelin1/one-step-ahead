@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 import HealthKit
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 class HealthKitViewModel: ObservableObject {
     @Published var sleepDuration: TimeInterval = 0
@@ -23,9 +25,15 @@ class HealthKitViewModel: ObservableObject {
     @Published public var pastSleepDurations: [PastSleepDuration] = []
     
     private var healthStore: HKHealthStore;
+    private var db = Firestore.firestore()
+    private var user = User.empty;
     
     init() {
         healthStore = HKHealthStore()
+    }
+    
+    func setUserId(_ user: User) {
+        self.user = user
     }
     
     func formattedSleepDuration() -> String {
@@ -104,21 +112,21 @@ class HealthKitViewModel: ObservableObject {
     }
     
     func fetchHealthData() {
-            // Fetch sleep duration
-            fetchSleepDuration()
-            
-            // Fetch weight
-            fetchWeight()
-            
-            // Fetch height
-            fetchHeight()
-            
-            // Fetch biological sex
-            fetchBiologicalSex()
+        // Fetch sleep duration
+        fetchSleepDuration()
         
-            // Fetch calories burned
-            fetchCaloriesBurned()
-        }
+        // Fetch weight
+        fetchWeight()
+        
+        // Fetch height
+        fetchHeight()
+        
+        // Fetch biological sex
+        fetchBiologicalSex()
+    
+        // Fetch calories burned
+        fetchCaloriesBurned()
+    }
         
         func fetchSleepDuration() {
             // Prepare the query to fetch sleep data
@@ -269,6 +277,10 @@ class HealthKitViewModel: ObservableObject {
                     if let sum = result.sumQuantity() {
                         let caloriesBurned = sum.doubleValue(for: HKUnit.kilocalorie())
                         self.caloriesBurned = caloriesBurned
+                        // adding to the db
+                        let exerciseObj = ExerciseGoal(caloriesBurned: caloriesBurned, goal: self.user.exerciseGoal, date: Date(), uid: self.user.id ?? "failed")
+                        self.addToFirebase(collection: "exercise", obj: exerciseObj)
+                        
                     } else {
                         print("No calories burned data available for today.")
                     }
@@ -277,6 +289,20 @@ class HealthKitViewModel: ObservableObject {
             }
         
         healthStore.execute(query)
+    }
+    
+    func addToFirebase(collection: String, obj: Codable) {
+        print("adding calorie info to firebase")
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM-dd-yyyy"
+        let dateStr = dateFormatter.string(from: Date())
+        let docId = (self.user.id ?? "failed") + dateStr
+        do {
+            try self.db.collection(collection).document(docId).setData(from: obj)
+        } catch {
+            print("failed to add calories to firebase")
+            print(error.localizedDescription)
+        }
     }
 }
 

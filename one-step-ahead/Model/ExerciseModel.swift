@@ -6,3 +6,13 @@
 //
 
 import Foundation
+import FirebaseFirestore
+import FirebaseFirestoreSwift
+
+struct ExerciseGoal: Codable, Identifiable {
+    @DocumentID var id: String?
+    var caloriesBurned: Double
+    var goal: Double
+    var date: Date
+    var uid: String
+}

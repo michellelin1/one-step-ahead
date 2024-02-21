@@ -11,12 +11,19 @@ import FirebaseFirestoreSwift
 
 class RecommendationViewModel: ObservableObject {
     @ObservedObject var hkViewModel = HealthKitViewModel()
-    @Published var sleepRecommendation: Double
+    @Published var sleepRecommendation: Double = -1
+    @Published var calorieRecommendation: Double = -1
     
     private var db = Firestore.firestore()
+    private var user = User.empty
+    
     
     init() {
         self.sleepRecommendation = -1
+    }
+    
+    func setUser(_ user: User) {
+        self.user = user
     }
     
     func getSleepRecommendation() -> Double {
@@ -74,7 +81,32 @@ class RecommendationViewModel: ObservableObject {
     }
     
     func calculateGradientCaloricSurplus() -> Double {
-        // TODO
+        // Create date range for each day
+        let today = Calendar.current.startOfDay(for: Date())
+        Task {
+            do {
+                // Fetch sleep goal for that day
+                let querySnapshot = try await db.collection("exercise")
+                    .whereField("uid", isEqualTo: user.id ?? "failed")
+                    .whereField("date", isLessThan: Timestamp(date: today))
+                    .order(by: "date", descending: true)
+                    .limit(to: 3)
+                    .getDocuments()
+                
+                var exerciseHistory = try querySnapshot.documents.compactMap { document in
+                    return try document.data(as: ExerciseGoal.self)
+                }
+                
+                let surplus = exerciseHistory.map { exercise in
+                    exercise.caloriesBurned - exercise.goal
+                }
+                print("calorie history \(exerciseHistory)")
+                print("calorie surplus \(surplus)")
+                
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
         return 0
     }
     

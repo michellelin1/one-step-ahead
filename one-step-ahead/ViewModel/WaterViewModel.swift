@@ -44,13 +44,11 @@ class WaterViewModel: ObservableObject {
                 let querySnapshot = try await db.collection("water")
                                             .whereField("uid", isEqualTo: uid)
                                             .whereField("date", isLessThan: Timestamp(date: today))
-                                            .order(by: "date")
+                                            .order(by: "date", descending: true)
                                             .limit(to: 3)
                                             .getDocuments()
                 waterHistory = try querySnapshot.documents.compactMap { document in
-                    var decodedDoc = try document.data(as: Water.self)
-                    decodedDoc.id = document.documentID
-                    return decodedDoc
+                    return try document.data(as: Water.self)
                 }
             } catch {
                 print(error.localizedDescription)

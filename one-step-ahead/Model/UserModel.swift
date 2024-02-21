@@ -13,7 +13,11 @@ struct User: Codable, Identifiable {
     @DocumentID var id: String?
     var firstName: String
     var lastName: String
-    var waterGoal: Float
-    var sleepGoal: Float
-    var exerciseGoal: Float
+    var waterGoal: Double
+    var sleepGoal: Double
+    var exerciseGoal: Double
+}
+
+extension User {
+    static var empty = User(id: "empty", firstName: "", lastName: "", waterGoal: 0, sleepGoal: 0, exerciseGoal: 0)
 }

@@ -10,6 +10,7 @@ import HealthKit
 
 struct HealthKitView: View {
     @ObservedObject var healthKitViewModel = HealthKitViewModel()
+    // @EnvironmentObject var authHandler: AuthViewModel
     @StateObject var authHandler: AuthViewModel = AuthViewModel()
     @ObservedObject var exerciseRecc = ExerciseReccView()
     
@@ -52,6 +53,7 @@ struct HealthKitView: View {
         }
         .padding()
         .onAppear {
+            healthKitViewModel.setUserId(authHandler.user ?? User.empty)
             healthKitViewModel.checkAuthorizationStatus()
         }
         
@@ -108,6 +110,8 @@ struct ProgressCircle: View {
     }
 }
 
-#Preview {
-    HealthKitView()
+struct HealthKitView_Previews: PreviewProvider {
+    static var previews: some View {
+        HealthKitView()
+    }
 }
