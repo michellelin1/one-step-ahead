@@ -8,8 +8,15 @@
 import SwiftUI
 
 struct SleepView: View {
+    @ObservedObject var recommendationViewModel = RecommendationViewModel()
+    @EnvironmentObject var authHandler: AuthViewModel
     var body: some View {
-        Text("Sleep View")
+        VStack{
+            Text("Sleep Recommendation: \(recommendationViewModel.sleepRecommendation)")
+        }.onAppear {
+            recommendationViewModel.setUser(authHandler.user ?? User.empty)
+            recommendationViewModel.getSleepRecommendation()
+        }
     }
 }
 

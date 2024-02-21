@@ -21,9 +21,7 @@ class HealthKitViewModel: ObservableObject {
     @Published var isAuthorized: Bool = false
     @Published var caloriesBurned: Double?
     @Published var sleep: Double?
-    
-    @Published public var pastSleepDurations: [PastSleepDuration] = []
-    
+        
     private var healthStore: HKHealthStore;
     private var db = Firestore.firestore()
     private var user = User.empty;
@@ -80,10 +78,6 @@ class HealthKitViewModel: ObservableObject {
         return String(format: "%.1f calories", caloriesBurned)
     }
     
-    func getPastSleepDurations() -> [PastSleepDuration] {
-        return self.pastSleepDurations
-    }
-    
     func checkAuthorizationStatus() {
         let healthKitTypesToRead: Set<HKObjectType> = [
             HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!,
@@ -136,7 +130,7 @@ class HealthKitViewModel: ObservableObject {
             
             let query = HKSampleQuery(sampleType: sleepType,
                                       predicate: nil,
-                                      limit: 3,
+                                      limit: 1,
                                       sortDescriptors: [sortDescriptor]) { (query, results, error) in
                 guard let samples = results as? [HKCategorySample], error == nil else {
                     if let error = error {
@@ -155,31 +149,15 @@ class HealthKitViewModel: ObservableObject {
                         let value = sample.value
                         print("Sleep start: \(startDate), end: \(endDate), value: \(value)")
                         print()
-                        let sleepDuration = PastSleepDuration(date: endDate, duration: endDate.timeIntervalSince(startDate))
-                        print(sleepDuration)
-                        
-                        self.pastSleepDurations.insert(sleepDuration, at: 0)
                         self.sleepDuration = endDate.timeIntervalSince(startDate)
-                        
-                        print(self.pastSleepDurations)
-                        print("length of pastSleepDurations inside: \(self.pastSleepDurations.count)")
+                        let sleepDurationObj = SleepDuration(sleepDuration: self.sleepDuration/3600, goal: self.user.sleepGoal, date: endDate, uid: self.user.id ?? "failed")
+                        let prevDay = Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
+                        self.addToFirebase(collection: "sleep", obj: sleepDurationObj, date: prevDay)
                     }
                 }
             }
             
-            // Execute the query
-            Task {
-                do {
-                    await healthStore.execute(query)
-                } catch {
-                    print(error.localizedDescription)
-                }
-            }
-//            healthStore.execute(query)
-            
-            print(self.pastSleepDurations)
-            print("length of pastSleepDurations: \(self.pastSleepDurations.count)")
-            
+            healthStore.execute(query)
         }
         
         func fetchWeight() {
@@ -279,7 +257,7 @@ class HealthKitViewModel: ObservableObject {
                         self.caloriesBurned = caloriesBurned
                         // adding to the db
                         let exerciseObj = ExerciseGoal(caloriesBurned: caloriesBurned, goal: self.user.exerciseGoal, date: Date(), uid: self.user.id ?? "failed")
-                        self.addToFirebase(collection: "exercise", obj: exerciseObj)
+                        self.addToFirebase(collection: "exercise", obj: exerciseObj, date: Date())
                         
                     } else {
                         print("No calories burned data available for today.")
@@ -291,11 +269,11 @@ class HealthKitViewModel: ObservableObject {
         healthStore.execute(query)
     }
     
-    func addToFirebase(collection: String, obj: Codable) {
-        print("adding calorie info to firebase")
+    func addToFirebase(collection: String, obj: Codable, date: Date) {
+        print("adding \(collection) info to firebase")
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM-dd-yyyy"
-        let dateStr = dateFormatter.string(from: Date())
+        let dateStr = dateFormatter.string(from: date)
         let docId = (self.user.id ?? "failed") + dateStr
         do {
             try self.db.collection(collection).document(docId).setData(from: obj)
