@@ -34,6 +34,9 @@
 		322D4B7D2B73714A0084E091 /* AuthHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322D4B7C2B73714A0084E091 /* AuthHandler.swift */; };
 		322D4B7F2B784EE80084E091 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322D4B7E2B784EE80084E091 /* ContentView.swift */; };
 		32A727BC2B835F480082CDA1 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32A727BB2B835F480082CDA1 /* UserModel.swift */; };
+		E26253652B85C545000B8246 /* PastSleepDurationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26253642B85C545000B8246 /* PastSleepDurationModel.swift */; };
+		E26253672B85C563000B8246 /* RecommendationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26253662B85C563000B8246 /* RecommendationViewModel.swift */; };
+		E262536B2B85C65D000B8246 /* RecommendationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E262536A2B85C65D000B8246 /* RecommendationView.swift */; };
 		E28B16DB2B7AE318001BE1BF /* HealthKitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28B16DA2B7AE318001BE1BF /* HealthKitViewModel.swift */; };
 		E28B16DD2B7B0529001BE1BF /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28B16DC2B7B0529001BE1BF /* OnboardingView.swift */; };
 		E28B16E12B7B18CB001BE1BF /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28B16E02B7B18CB001BE1BF /* DashboardView.swift */; };
@@ -84,6 +87,9 @@
 		322D4B7C2B73714A0084E091 /* AuthHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthHandler.swift; sourceTree = "<group>"; };
 		322D4B7E2B784EE80084E091 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		32A727BB2B835F480082CDA1 /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
+		E26253642B85C545000B8246 /* PastSleepDurationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PastSleepDurationModel.swift; sourceTree = "<group>"; };
+		E26253662B85C563000B8246 /* RecommendationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationViewModel.swift; sourceTree = "<group>"; };
+		E262536A2B85C65D000B8246 /* RecommendationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationView.swift; sourceTree = "<group>"; };
 		E28B16DA2B7AE318001BE1BF /* HealthKitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitViewModel.swift; sourceTree = "<group>"; };
 		E28B16DC2B7B0529001BE1BF /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		E28B16E02B7B18CB001BE1BF /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
@@ -190,6 +196,7 @@
 				322D4B312B6DBB0C0084E091 /* WaterView.swift */,
 				1F31411E2B757EE500F33741 /* HealthKitView.swift */,
 				E28B16DC2B7B0529001BE1BF /* OnboardingView.swift */,
+				E262536A2B85C65D000B8246 /* RecommendationView.swift */,
 				E28B16E02B7B18CB001BE1BF /* DashboardView.swift */,
 			);
 			path = Views;
@@ -200,6 +207,7 @@
 			children = (
 				1F77CB872B8454E000EE7FEC /* ExerciseRecc.swift */,
 				322D4B642B6DC2DC0084E091 /* WaterViewModel.swift */,
+				E26253662B85C563000B8246 /* RecommendationViewModel.swift */,
 				322D4B732B73704D0084E091 /* SleepViewModel.swift */,
 				322D4B752B73706C0084E091 /* ExerciseViewModel.swift */,
 				E28B16DA2B7AE318001BE1BF /* HealthKitViewModel.swift */,
@@ -214,6 +222,7 @@
 				322D4B772B7370E40084E091 /* SleepModel.swift */,
 				322D4B792B7370F70084E091 /* ExerciseModel.swift */,
 				32A727BB2B835F480082CDA1 /* UserModel.swift */,
+				E26253642B85C545000B8246 /* PastSleepDurationModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -375,6 +384,7 @@
 				322D4B302B6DBB0C0084E091 /* one_step_aheadApp.swift in Sources */,
 				322D4B7D2B73714A0084E091 /* AuthHandler.swift in Sources */,
 				322D4B782B7370E40084E091 /* SleepModel.swift in Sources */,
+				E262536B2B85C65D000B8246 /* RecommendationView.swift in Sources */,
 				322D4B7A2B7370F70084E091 /* ExerciseModel.swift in Sources */,
 				E28B16DB2B7AE318001BE1BF /* HealthKitViewModel.swift in Sources */,
 				322D4B762B73706C0084E091 /* ExerciseViewModel.swift in Sources */,
@@ -383,9 +393,11 @@
 				1F77CB882B8454E000EE7FEC /* ExerciseRecc.swift in Sources */,
 				322D4B6C2B736B8D0084E091 /* MainView.swift in Sources */,
 				32A727BC2B835F480082CDA1 /* UserModel.swift in Sources */,
+				E26253672B85C563000B8246 /* RecommendationViewModel.swift in Sources */,
 				322D4B722B736BDC0084E091 /* LoginView.swift in Sources */,
 				E28B16DD2B7B0529001BE1BF /* OnboardingView.swift in Sources */,
 				322D4B672B6DC3050084E091 /* WaterModel.swift in Sources */,
+				E26253652B85C545000B8246 /* PastSleepDurationModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

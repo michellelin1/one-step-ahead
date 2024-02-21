@@ -279,3 +279,4 @@ class HealthKitViewModel: ObservableObject {
         healthStore.execute(query)
     }
 }
+

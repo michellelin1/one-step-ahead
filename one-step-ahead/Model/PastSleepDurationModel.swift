@@ -11,3 +11,4 @@ struct PastSleepDuration {
     var date: Date //endDate, i.e., the day they wake up
     var duration: TimeInterval
 }
+
