@@ -31,7 +31,11 @@ class RecommendationViewModel: ObservableObject {
             let exerciseSurplus = await calculateGradientCaloricSurplus()
             let currCal = await getCurrentCaloriesSurplus()
             
-            let extraFromSleepDeficit = sleepDeficit * 0.6
+//            let extraFromSleepDeficit = sleepDeficit * 0.6
+            
+            let extraFromSleepDeficit = user.sleepGoal * sleepDeficit * 0.5
+            print("user sleep goal: \(user.sleepGoal)")
+            print("extra from sleep deficit: \(user.sleepGoal)")
             // dividing by 200 = for every 100 more than goal, they get an extra 30 min of sleep
             let extraFromExerciseSurplus = exerciseSurplus/200 * 0.2
             let extraFromCurrCal = currCal/200 * 0.3
@@ -61,15 +65,35 @@ class RecommendationViewModel: ObservableObject {
             }
             
             let sleepDeficits = sleepHistory.map { sleep in
-                sleep.sleepDuration - sleep.goal
+                if (sleep.sleepDuration >= sleep.goal) {
+                    return 0.0
+                }
+                
+                return (sleep.goal - sleep.sleepDuration) / sleep.goal
             }
+            
             print("sleep history \(sleepHistory)")
             print("sleep deficit \(sleepDeficits)")
+            print()
             self.sleepHistory = sleepHistory
-            return sleepDeficits.enumerated().reduce(0) { (curr, tuple) in
-                let (index, amt) = tuple
-                return curr + pow(0.5, Double(index)) * amt
+            
+//            return sleepDeficits.enumerated().reduce(0) { (curr, tuple) in
+//                let (index, amt) = tuple
+//                return curr + pow(0.5, Double(index)) * amt
+//            }
+            
+            var gradientSleepDeficit: Double = 0
+            var numDaysBeforeToday = 1
+            for sleepDeficit in sleepDeficits {
+                gradientSleepDeficit += pow(0.5, Double(numDaysBeforeToday)) * sleepDeficit
+                
+                print("numDaysBeforeToday: \(numDaysBeforeToday), gradientSleepDeficit: \(gradientSleepDeficit)")
+                
+                numDaysBeforeToday += 1
             }
+            
+            return gradientSleepDeficit
+            
         } catch {
             print(error.localizedDescription)
             return 0
