@@ -8,8 +8,16 @@
 import SwiftUI
 
 struct ExerciseView: View {
+    @ObservedObject var recommendationViewModel = RecommendationViewModel()
+    @EnvironmentObject var authHandler: AuthViewModel
+    
     var body: some View {
-        Text("Exercise View")
+        VStack{
+            Text("Exercise Recommendation: \(recommendationViewModel.calorieRecommendation)")
+        }.onAppear {
+            recommendationViewModel.setUser(authHandler.user ?? User.empty)
+            recommendationViewModel.getCaloriesRecommendation()
+        }
     }
 }
 

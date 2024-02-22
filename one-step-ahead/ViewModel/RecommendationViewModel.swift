@@ -35,7 +35,7 @@ class RecommendationViewModel: ObservableObject {
             
             let extraFromSleepDeficit = user.sleepGoal * sleepDeficit * 0.5
             print("user sleep goal: \(user.sleepGoal)")
-            print("extra from sleep deficit: \(user.sleepGoal)")
+            print("extra from sleep deficit: \(extraFromSleepDeficit)")
             // dividing by 200 = for every 100 more than goal, they get an extra 30 min of sleep
             let extraFromExerciseSurplus = exerciseSurplus/200 * 0.2
             let extraFromCurrCal = currCal/200 * 0.3
@@ -62,6 +62,8 @@ class RecommendationViewModel: ObservableObject {
             let minusFromExerciseSurplus = exerciseSurplus/200 * 0.2
             // TODO: minusFromWaterDeficit
             
+            print("user exercise goal: \(user.exerciseGoal)")
+//            print("extra from sleep deficit: \(extraFromSleepDeficit)")
             self.calorieRecommendation = user.exerciseGoal - minusFromSleepDeficit - minusFromExerciseSurplus
             
             
