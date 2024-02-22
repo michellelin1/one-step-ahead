@@ -10,7 +10,6 @@ import HealthKit
 
 struct HealthKitView: View {
     @ObservedObject var healthKitViewModel = HealthKitViewModel()
-    // @EnvironmentObject var authHandler: AuthViewModel
     @StateObject var authHandler: AuthViewModel = AuthViewModel()
     @ObservedObject var exerciseRecc = ExerciseReccView()
     
@@ -43,12 +42,14 @@ struct HealthKitView: View {
             Text("Daily Progress!").font(.system(size: 24)).bold()
             let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(authHandler.user?.exerciseGoal ?? 350.0)
             
-            // TO DO: MAKE PROGRESS VARS FOR WATER AND SLEEP
+            let sleep_progress = Float(healthKitViewModel.sleepDuration / 3600) / Float(authHandler.user?.sleepGoal ?? 8.0)
+            
+            // TO DO: MAKE PROGRESS VARS FOR WATER
             
             HStack {
                 ProgressCircle(progress: cal_progress, color: Color.green, imageName: "figure.walk")
                 ProgressCircle(progress: 0.7, color: Color.blue, imageName: "drop.fill") // Adjust
-                ProgressCircle(progress: 1.1, color: Color.purple, imageName: "moon.zzz.fill") //
+                ProgressCircle(progress: sleep_progress, color: Color.purple, imageName: "moon.zzz.fill") //
             }
         }
         .padding()

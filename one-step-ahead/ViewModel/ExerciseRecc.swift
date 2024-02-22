@@ -30,13 +30,7 @@ class ExerciseReccView: ObservableObject {
         else {
             recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "Heavy" }
         }
-//        print(recommendedExercises)
-//        return recommendedExercises
-                // figure it
-        // Logic to generate recommendations based on user data
-        // For example, you might recommend exercises based on user's fitness level, goals, previous workouts, etc.
-        // Here, we're just providing some dummy recommendations
-//        recommendedExercises = Exercise.dummyExercises
+
     }
 }
 
@@ -45,7 +39,6 @@ struct Exercise: Hashable {
     let difficulty: String // beg, int, adv
     let intensity: String // light, moderate, heavy
     
-    // Dummy data for demonstration purposes
     static let dummyExercises: [Exercise] = [
         Exercise(name: "Push-ups", difficulty: "Intermediate", intensity: "Light"),
         Exercise(name: "Running", difficulty: "Beginner", intensity: "Heavy"), // 200 cal 20 mins
