@@ -21,6 +21,8 @@ class HealthKitViewModel: ObservableObject {
     @Published var isAuthorized: Bool = false
     @Published var caloriesBurned: Double?
     @Published var sleep: Double?
+    
+    private var sleepDurationFetched: Bool = false
         
     private var healthStore: HKHealthStore;
     private var db = Firestore.firestore()
@@ -123,6 +125,10 @@ class HealthKitViewModel: ObservableObject {
     }
         
         func fetchSleepDuration() {
+            if self.sleepDurationFetched {
+                return
+            }
+            
             // Prepare the query to fetch sleep data
             let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
             let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
@@ -173,6 +179,7 @@ class HealthKitViewModel: ObservableObject {
                     self.addToFirebase(collection: "sleep", obj: sleepDurationObj, date: sampleIntervalStartDate)
                     print("sleepDurationObj duration: \(sleepDurationObj.sleepDuration)")
                     print("sleepDurationObj date: \(sleepDurationObj.date)")
+                    self.sleepDurationFetched = true
                     
                 }
             }
