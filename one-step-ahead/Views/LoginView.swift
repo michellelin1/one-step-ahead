@@ -10,14 +10,23 @@ import SwiftUI
 struct LoginView: View {
     @State var email = ""
     @State var password = ""
-//    @EnvironmentObject var authHandler: AuthViewModel
      @StateObject var authHandler: AuthViewModel = AuthViewModel()
     
     var body: some View {
         VStack {
+            Text("Sign In").font(.system(size: 30)).bold()
+            Text("Click Sign Up to Create Account").padding(.bottom)
+            Spacer().frame(height: 10)
             TextField("email", text: $email)
                 .autocapitalization(.none)
+                .padding(10)
+                .background(Color.gray.opacity(0.1)) // Set background color to white
+                .cornerRadius(10)
             SecureField("password", text: $password)
+                .padding(10)
+                .background(Color.gray.opacity(0.1)) // Set background color to white
+                .cornerRadius(10)
+                .padding(.bottom)
             Button(action: {
                 Task {
                     await authHandler.signIn(email: email, password: password)
@@ -35,7 +44,7 @@ struct LoginView: View {
                             .stroke(.white, lineWidth: 1.5)
                 )
             }
-            .background(.pink) // If you have this
+            .background(.pink.opacity(0.9))
             .cornerRadius(10)
             
             Button("Sign Up") {
@@ -45,6 +54,11 @@ struct LoginView: View {
                     self.password = ""
                 }
             }
+            .frame(minWidth: 0, maxWidth: .infinity)
+            .padding(10)
+            .background(Color.gray.opacity(0.9))
+            .foregroundColor(.white)
+            .cornerRadius(10)
             
         }
         .padding()

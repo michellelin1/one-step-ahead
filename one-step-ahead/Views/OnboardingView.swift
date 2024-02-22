@@ -11,7 +11,14 @@ struct WelcomeView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Text("Welcome to One Step Ahead")
+                Text("Welcome to").font(.system(size: 35)).multilineTextAlignment(.center)
+                Text("One Step Ahead!").font(.system(size: 35)).multilineTextAlignment(.center)
+                Image("1sa")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 100, height: 100)
+                    .cornerRadius(20).padding()
+//                Text("Welcome to One Step Ahead").padding()
                 NavigationLink(destination: OverviewView()) {
                     Text("Continue")
                 }
@@ -24,7 +31,8 @@ struct WelcomeView: View {
 struct OverviewView: View {
     var body: some View {
             VStack {
-                Text("We’re dedicated to helping you live your best life by staying hydrated, active, and well rested")
+                Text("We’re dedicated to helping you live your best life by staying hydrated, active, and well rested!")
+                    .multilineTextAlignment(.center)
                 NavigationLink(destination: GetStartedView()) {
                     Text("Continue")
                 }
@@ -36,7 +44,8 @@ struct OverviewView: View {
 struct GetStartedView: View {
     var body: some View {
             VStack {
-                Text("To start out, tell us a little about yourself and what goals you hope to achieve")
+                Text("To start out, tell us a little about yourself and what goals you hope to achieve!")
+                    .multilineTextAlignment(.center)
                 NavigationLink(destination: DataIntakeView()) {
                     Text("Continue")
                 }
@@ -100,9 +109,9 @@ struct DataIntakeView: View {
                     completed = authHandler.setUserData(
                         first: firstName,
                         last: lastName,
-                        water: Double(hydrationGoal) ?? 0,
-                        sleep: Double(sleepGoal) ?? 0,
-                        exercise: Double(calorieGoal) ?? 0
+                        water: Double(hydrationGoal) ?? 350.0,
+                        sleep: Double(sleepGoal) ?? 8,
+                        exercise: Double(calorieGoal) ?? 48
                     )
                 }
                 NavigationLink(destination: OnboardingCompleteView()) {
@@ -117,14 +126,21 @@ struct DataIntakeView: View {
 
 struct OnboardingCompleteView: View {
     // TODO: Remove back button after reaching main page
+    @StateObject var authHandler: AuthViewModel = AuthViewModel()
     var body: some View {
         VStack {
-            Text("You're all set!")
+            Text("You're all set, \(authHandler.user?.firstName ?? "User")!").font(.system(size: 30)).multilineTextAlignment(.center)
+            Image("Image")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 300, height: 300)
             NavigationLink(destination: MainView()) {
-                Text("Let's get started")
+                Text("Let's get started!").font(.system(size: 24))
             }
         }
+
     }
+
 }
 
 struct WelcomeView_Previews: PreviewProvider {

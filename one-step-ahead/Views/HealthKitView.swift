@@ -16,63 +16,64 @@ struct HealthKitView: View {
     @ObservedObject var exerciseRecc = ExerciseReccView()
     
     var body: some View {
-        VStack {
-            VStack(alignment: .leading) {
-                Text("\(authHandler.user?.firstName ?? "User") \(authHandler.user?.lastName ?? "Name")")
-                    .font(.system(size: 30)).bold()
+        ScrollView {
+            VStack {
+                VStack(alignment: .leading) {
+                    Text("\(authHandler.user?.firstName ?? "User") \(authHandler.user?.lastName ?? "Name")")
+                        .font(.system(size: 30)).bold()
+                        .padding()
+                }
+                Text("Sleep Duration: \(healthKitViewModel.formattedSleepDuration())")
                     .padding()
+                Text("Weight: \(healthKitViewModel.formattedWeight())")
+                    .padding()
+                Text("Height: \(healthKitViewModel.formattedHeight())")
+                    .padding()
+                Text("Biological Sex: \(healthKitViewModel.formattedBiologicalSex())")
+                    .padding()
+                //            Text("Workouts: \(healthKitViewModel.formattedWorkouts())")
+                //                .padding()
+                Text("Calories Burned: \(healthKitViewModel.formattedCalBurned())")
+                    .padding()
+                Button("Sign Out") {
+                    authHandler.signOut()
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .foregroundColor(.red)
+                .cornerRadius(10)
+                .padding()
+                //            Button("Authorize Health Data") {
+                //                healthKitViewModel.requestAuthorization()
+                //            }
+                //            .padding()
+                //            .disabled(HKHealthStore.isHealthDataAvailable())
+                Spacer()
+                
+                Text("Daily Progress!").font(.system(size: 24)).bold()
+                let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(authHandler.user?.exerciseGoal ?? 350.0)
+                
+                
+                //may need to update 3 oz
+                let water_progress = Float(waterViewModel.currWater.amountDrank) / Float(authHandler.user?.waterGoal ?? 3)
+                
+                let sleep_progress = Float(healthKitViewModel.sleepDuration / 3600) / Float(authHandler.user?.sleepGoal ?? 8.0)
+                
+                
+                HStack {
+                    ProgressCircle(progress: cal_progress, color: Color.green, imageName: "figure.walk")
+                    ProgressCircle(progress: water_progress, color: Color.blue, imageName: "drop.fill") // Adjust
+                    ProgressCircle(progress: sleep_progress, color: Color.purple, imageName: "moon.zzz.fill") //
+                }
             }
-            Text("Sleep Duration: \(healthKitViewModel.formattedSleepDuration())")
-                .padding()
-            Text("Weight: \(healthKitViewModel.formattedWeight())")
-                .padding()
-            Text("Height: \(healthKitViewModel.formattedHeight())")
-                .padding()
-            Text("Biological Sex: \(healthKitViewModel.formattedBiologicalSex())")
-                .padding()
-//            Text("Workouts: \(healthKitViewModel.formattedWorkouts())")
-//                .padding()
-            Text("Calories Burned: \(healthKitViewModel.formattedCalBurned())")
-                .padding()
-            Button("Sign Out") {
-                authHandler.signOut()
-            }
-            .frame(maxWidth: .infinity)
             .padding()
-            .background(Color.gray.opacity(0.2))
-            .foregroundColor(.red)
-            .cornerRadius(10)
-            .padding()
-//            Button("Authorize Health Data") {
-//                healthKitViewModel.requestAuthorization()
-//            }
-//            .padding()
-//            .disabled(HKHealthStore.isHealthDataAvailable())
-            Spacer()
-            
-            Text("Daily Progress!").font(.system(size: 24)).bold()
-            let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(authHandler.user?.exerciseGoal ?? 350.0)
-            
-            
-            //may need to update 3 oz
-            let water_progress = Float(waterViewModel.currWater.amountDrank) / Float(authHandler.user?.waterGoal ?? 3)
-            
-            let sleep_progress = Float(healthKitViewModel.sleepDuration / 3600) / Float(authHandler.user?.sleepGoal ?? 8.0)
-
-            
-            HStack {
-                ProgressCircle(progress: cal_progress, color: Color.green, imageName: "figure.walk")
-                ProgressCircle(progress: water_progress, color: Color.blue, imageName: "drop.fill") // Adjust
-                ProgressCircle(progress: sleep_progress, color: Color.purple, imageName: "moon.zzz.fill") //
+            .onAppear {
+                healthKitViewModel.setUserId(authHandler.user ?? User.empty)
+                healthKitViewModel.checkAuthorizationStatus()
+                waterViewModel.fetchCurrWater()
             }
         }
-        .padding()
-        .onAppear {
-            healthKitViewModel.setUserId(authHandler.user ?? User.empty)
-            healthKitViewModel.checkAuthorizationStatus()
-            waterViewModel.fetchCurrWater()
-        }
-        
     }
 }
 

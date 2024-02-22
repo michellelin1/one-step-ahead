@@ -23,6 +23,9 @@ struct ContentView: View {
             }
             else {
                 MainView()
+                    .onAppear {
+                    startFakeNetworkCall()
+                    }
             }
             if isLoading {
                 LoadingView()
