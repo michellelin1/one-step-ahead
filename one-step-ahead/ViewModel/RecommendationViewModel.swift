@@ -48,6 +48,29 @@ class RecommendationViewModel: ObservableObject {
         }
     }
     
+    func getWaterRecommendation(){
+        
+    }
+    
+    func getCaloriesRecommendation(){
+        Task {
+            let sleepDeficit = await calculateGradientSleepDeficit()
+            let exerciseSurplus = await calculateGradientCaloricSurplus()
+            
+            let minusFromSleepDeficit = user.exerciseGoal * sleepDeficit * 0.5
+            // dividing by 200 = for every 100 more than goal, they get an extra 30 min of sleep
+            let minusFromExerciseSurplus = exerciseSurplus/200 * 0.2
+            // TODO: minusFromWaterDeficit
+            
+            self.calorieRecommendation = user.exerciseGoal - minusFromSleepDeficit - minusFromExerciseSurplus
+            
+            
+            // TODO: Update calories goal in DB
+//            let todaySleepGoal = SleepDuration(sleepDuration: 0, goal: sleepRecommendation, date: Date(), uid: user.id ?? "")
+//            addToFirebase(collection: "sleep", obj: todaySleepGoal, date: Date())
+        }
+    }
+    
     func calculateGradientSleepDeficit() async -> Double {
         print("begin calculating sleep deficits")
         let today = Calendar.current.startOfDay(for: Date())
@@ -76,23 +99,7 @@ class RecommendationViewModel: ObservableObject {
             print("sleep deficit \(sleepDeficits)")
             print()
             self.sleepHistory = sleepHistory
-            
-//            return sleepDeficits.enumerated().reduce(0) { (curr, tuple) in
-//                let (index, amt) = tuple
-//                return curr + pow(0.5, Double(index)) * amt
-//            }
-            
-            var gradientSleepDeficit: Double = 0
-            var numDaysBeforeToday = 1
-            for sleepDeficit in sleepDeficits {
-                gradientSleepDeficit += pow(0.5, Double(numDaysBeforeToday)) * sleepDeficit
-                
-                print("numDaysBeforeToday: \(numDaysBeforeToday), gradientSleepDeficit: \(gradientSleepDeficit)")
-                
-                numDaysBeforeToday += 1
-            }
-            
-            return gradientSleepDeficit
+            return calculateGradientRatio(fromRatios: sleepDeficits)
             
         } catch {
             print(error.localizedDescription)
@@ -119,15 +126,13 @@ class RecommendationViewModel: ObservableObject {
             
             let surplus = exerciseHistory.map { exercise in
                 let amt = exercise.caloriesBurned - exercise.goal
-                return amt > 0 ? amt : 0
+                return amt > 0 ? amt / exercise.goal : 0
             }
             print("calorie history \(exerciseHistory)")
             print("calorie surplus \(surplus)")
             self.exerciseHistory = exerciseHistory
-            return surplus.enumerated().reduce(0) { (curr, tuple) in
-                let (index, amt) = tuple
-                return curr + pow(0.5, Double(index)) * amt
-            }
+            return calculateGradientRatio(fromRatios: surplus)
+            
         } catch {
             print(error.localizedDescription)
             return 0
@@ -177,6 +182,20 @@ class RecommendationViewModel: ObservableObject {
             print("failed to add calories to firebase")
             print(error.localizedDescription)
         }
+    }
+    
+    func calculateGradientRatio(fromRatios ratios: [Double]) -> Double {
+        var gradientRatio: Double = 0
+        var numDaysBeforeToday = 1
+        for ratio in ratios {
+            gradientRatio += pow(0.5, Double(numDaysBeforeToday)) * ratio
+            
+            print("numDaysBeforeToday: \(numDaysBeforeToday), gradientRatio: \(gradientRatio)")
+            
+            numDaysBeforeToday += 1
+        }
+        
+        return gradientRatio
     }
     
 }
