@@ -127,10 +127,19 @@ class HealthKitViewModel: ObservableObject {
             let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
             let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
             
+            let startOfToday = Calendar.current.startOfDay(for: Date())
+            let sampleIntervalStartDate = Calendar.current.date(byAdding: .hour, value: -6, to: startOfToday)! // 6PM yesterday
+            let sampleIntervalEndDate = Calendar.current.date(byAdding: .hour, value: 16, to: startOfToday)! // 4PM today
+            let sampleOptions: HKQueryOptions = [.strictStartDate, .strictEndDate]
+            
+            print("sampleIntervalStartDate: \(sampleIntervalStartDate)")
+            print("sampleIntervalEndDate: \(sampleIntervalEndDate)")
+            
+            let samplePredicate = HKQuery.predicateForSamples(withStart: sampleIntervalStartDate, end: sampleIntervalEndDate, options: sampleOptions)
             
             let query = HKSampleQuery(sampleType: sleepType,
-                                      predicate: nil,
-                                      limit: 1,
+                                      predicate: samplePredicate,
+                                      limit: HKObjectQueryNoLimit,
                                       sortDescriptors: [sortDescriptor]) { (query, results, error) in
                 guard let samples = results as? [HKCategorySample], error == nil else {
                     if let error = error {
@@ -143,17 +152,28 @@ class HealthKitViewModel: ObservableObject {
                 
                 DispatchQueue.main.async {
                     // Process fetched sleep data
+                    let asleepValues = [3, 4, 5] // 3: asleepCore, 4: asleepDeep, 5: asleepREM
+                    
                     for sample in samples {
-                        let startDate = sample.startDate
-                        let endDate = sample.endDate
-                        let value = sample.value
-                        print("Sleep start: \(startDate), end: \(endDate), value: \(value)")
-                        print()
-                        self.sleepDuration = endDate.timeIntervalSince(startDate)
-                        let sleepDurationObj = SleepDuration(sleepDuration: self.sleepDuration/3600, goal: self.user.sleepGoal, date: endDate, uid: self.user.id ?? "failed")
-                        let prevDay = Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
-                        self.addToFirebase(collection: "sleep", obj: sleepDurationObj, date: prevDay)
+                        if (asleepValues.contains(sample.value)) {
+                            let startDate = sample.startDate
+                            let endDate = sample.endDate
+                            let value = sample.value
+                            
+                            
+                            print("Sleep start: \(startDate), end: \(endDate), value: \(value)")
+                            print()
+                            
+                            self.sleepDuration += endDate.timeIntervalSince(startDate)
+                        }
                     }
+                    
+                    let sleepDurationObj = SleepDuration(sleepDuration: self.sleepDuration/3600, goal: self.user.sleepGoal, date: sampleIntervalStartDate, uid: self.user.id ?? "failed")
+//                    let prevDay = Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
+                    self.addToFirebase(collection: "sleep", obj: sleepDurationObj, date: sampleIntervalStartDate)
+                    print("sleepDurationObj duration: \(sleepDurationObj.sleepDuration)")
+                    print("sleepDurationObj date: \(sleepDurationObj.date)")
+                    
                 }
             }
             

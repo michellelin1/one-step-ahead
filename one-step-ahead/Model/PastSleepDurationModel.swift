@@ -13,6 +13,6 @@ struct SleepDuration: Codable, Identifiable {
     @DocumentID var id: String?
     var sleepDuration: TimeInterval // stored in hours
     var goal: Double
-    var date: Date //endDate, i.e., the day they wake up
+    var date: Date //startDate, i.e., the day they went to sleep
     var uid: String
 }
