@@ -12,6 +12,7 @@ import FirebaseFirestoreSwift
 class RecommendationViewModel: ObservableObject {
     @Published var sleepRecommendation: Double = -1
     @Published var calorieRecommendation: Double = -1
+    @Published var waterRecommendation: Double = -1
     @Published var sleepHistory: [SleepDuration] = []
     @Published var exerciseHistory: [ExerciseGoal] = []
     @Published var waterHistory: [Water] = []
@@ -30,17 +31,20 @@ class RecommendationViewModel: ObservableObject {
             let sleepDeficit = await calculateGradientSleepDeficit()
             let exerciseSurplus = await calculateGradientCaloricSurplus()
             let currCal = await getCurrentCaloriesSurplus()
+            let waterDeficit = await calculateGradientWaterDeficit()
             
 //            let extraFromSleepDeficit = sleepDeficit * 0.6
             
             let extraFromSleepDeficit = user.sleepGoal * sleepDeficit * 0.5
-            print("user sleep goal: \(user.sleepGoal)")
-            print("extra from sleep deficit: \(extraFromSleepDeficit)")
             // dividing by 200 = for every 100 more than goal, they get an extra 30 min of sleep
             let extraFromExerciseSurplus = exerciseSurplus/200 * 0.2
             let extraFromCurrCal = currCal/200 * 0.3
+            let extraFromWaterDeficit = user.waterGoal * waterDeficit * 0.1
             
-            self.sleepRecommendation = user.sleepGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal
+            print("user sleep goal: \(user.sleepGoal)")
+            print("extra from sleep deficit: \(extraFromSleepDeficit)")
+            
+            self.sleepRecommendation = user.sleepGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal + extraFromWaterDeficit
             
             // update sleep goal in DB
             let todaySleepGoal = SleepDuration(sleepDuration: 0, goal: sleepRecommendation, date: Date(), uid: user.id ?? "")
@@ -49,27 +53,47 @@ class RecommendationViewModel: ObservableObject {
     }
     
     func getWaterRecommendation(){
-        
+        Task {
+            let sleepDeficit = await calculateGradientSleepDeficit()
+            let exerciseSurplus = await calculateGradientCaloricSurplus()
+            let currCal = await getCurrentCaloriesSurplus()
+            
+            let extraFromSleepDeficit = user.sleepGoal * sleepDeficit * 0.5
+            // dividing by 200 = for every 100 more than goal, they get an extra 30 min of sleep
+            let extraFromExerciseSurplus = exerciseSurplus/200 * 0.2
+            let extraFromCurrCal = currCal/200 * 0.3
+            
+            print("user sleep goal: \(user.sleepGoal)")
+            print("extra from sleep deficit: \(extraFromSleepDeficit)")
+            
+            self.waterRecommendation = user.waterGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal
+            
+            // update sleep goal in DB
+            let todayWaterGoal = Water(amountDrank: 0, goal: Float(waterRecommendation), date: Date(), uid: user.id ?? "")
+            addToFirebase(collection: "water", obj: todayWaterGoal, date: Date())
+        }
     }
     
     func getCaloriesRecommendation(){
         Task {
             let sleepDeficit = await calculateGradientSleepDeficit()
             let exerciseSurplus = await calculateGradientCaloricSurplus()
+            let waterDeficit = await calculateGradientWaterDeficit()
+            
             
             let minusFromSleepDeficit = user.exerciseGoal * sleepDeficit * 0.5
             // dividing by 200 = for every 100 more than goal, they get an extra 30 min of sleep
             let minusFromExerciseSurplus = exerciseSurplus/200 * 0.2
-            // TODO: minusFromWaterDeficit
+            let minusFromWaterDeficit = user.waterGoal * waterDeficit * 0.1
             
             print("user exercise goal: \(user.exerciseGoal)")
 //            print("extra from sleep deficit: \(extraFromSleepDeficit)")
-            self.calorieRecommendation = user.exerciseGoal - minusFromSleepDeficit - minusFromExerciseSurplus
+            self.calorieRecommendation = user.exerciseGoal - minusFromSleepDeficit - minusFromExerciseSurplus - minusFromWaterDeficit
             
             
-            // TODO: Update calories goal in DB
-//            let todaySleepGoal = SleepDuration(sleepDuration: 0, goal: sleepRecommendation, date: Date(), uid: user.id ?? "")
-//            addToFirebase(collection: "sleep", obj: todaySleepGoal, date: Date())
+            // Update calories goal in DB
+            let todayExerciseGoal = ExerciseGoal(caloriesBurned: 0, goal: calorieRecommendation, date: Date(), uid: user.id ?? "")
+            addToFirebase(collection: "exercise", obj: todayExerciseGoal, date: Date())
         }
     }
     
@@ -110,6 +134,7 @@ class RecommendationViewModel: ObservableObject {
     }
     
     func calculateGradientCaloricSurplus() async -> Double {
+        print("begin calculating calories burned surplus")
         // Create date range for each day
         let today = Calendar.current.startOfDay(for: Date())
         let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: today)!
@@ -141,9 +166,42 @@ class RecommendationViewModel: ObservableObject {
         }
     }
     
-    func calculateGradientWaterDeficit() -> Double {
+    func calculateGradientWaterDeficit() async -> Double {
         // TODO
-        return 0
+        print("begin calculating gradient water deficit")
+        
+        let today = Calendar.current.startOfDay(for: Date())
+        do {
+            // Fetch sleep goal for that day
+            let querySnapshot = try await db.collection("water")
+                .whereField("uid", isEqualTo: user.id ?? "failed")
+                .whereField("date", isLessThan: Timestamp(date: today))
+                .order(by: "date", descending: true)
+                .limit(to: 3)
+                .getDocuments()
+            
+            let waterHistory = try querySnapshot.documents.compactMap { document in
+                return try document.data(as: Water.self)
+            }
+            
+            let waterDeficits = waterHistory.map { water in
+                if (water.amountDrank >= water.goal) {
+                    return 0.0
+                }
+                
+                return Double((water.goal - water.amountDrank) / water.goal)
+            }
+            
+            print("water history \(waterHistory)")
+            print("water deficits \(waterDeficits)")
+            print()
+            self.waterHistory = waterHistory
+            return calculateGradientRatio(fromRatios: waterDeficits)
+            
+        } catch {
+            print(error.localizedDescription)
+            return 0
+        }
     }
     
     func fetchPastSleepGoals() -> [Double] {

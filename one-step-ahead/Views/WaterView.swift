@@ -9,9 +9,11 @@ import SwiftUI
 
 struct WaterView: View {
     @ObservedObject var viewModel = WaterViewModel()
+    @ObservedObject var recommendationViewModel = RecommendationViewModel()
     @State var test = ""
     var body: some View {
         VStack(alignment: .center) {
+            Text("Water Recommendation: \(recommendationViewModel.waterRecommendation)")
             Text("Log your water intake")
                 .font(.system(size: 35))
             TextField("8 oz", text: $viewModel.amtStr)
@@ -27,6 +29,8 @@ struct WaterView: View {
         .onAppear {
             viewModel.fetchCurrWater()
             viewModel.fetchWaterHistory()
+            recommendationViewModel.getWaterRecommendation()
+            
         }
         .padding()
     }
