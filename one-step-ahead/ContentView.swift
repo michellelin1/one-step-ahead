@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-//    @EnvironmentObject var authHandler: AuthViewModel
+    @State private var isLoading = false
     @StateObject var authHandler: AuthViewModel = AuthViewModel()
     var body: some View {
 //        Button("signout") {
 //            authHandler.signOut()
 //        }
-        Group {
+        ZStack {
             if authHandler.userSession == nil {
                 LoginView()
             }
@@ -24,6 +24,18 @@ struct ContentView: View {
             else {
                 MainView()
             }
+            if isLoading {
+                LoadingView()
+                
+            }
+        }
+            .onAppear{startFakeNetworkCall()}
+    }
+    
+    func startFakeNetworkCall() {
+        isLoading = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            isLoading = false
         }
     }
 }
@@ -31,5 +43,21 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+struct LoadingView: View {
+    var body: some View {
+        ZStack {
+            Color(.systemBackground)
+                .ignoresSafeArea()
+            VStack {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                    .scaleEffect(2)
+                    .padding()
+                Text("Loading Content...")
+            }
+        }
     }
 }

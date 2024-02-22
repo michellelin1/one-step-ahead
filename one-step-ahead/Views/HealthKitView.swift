@@ -10,6 +10,8 @@ import HealthKit
 
 struct HealthKitView: View {
     @ObservedObject var healthKitViewModel = HealthKitViewModel()
+    @StateObject var waterViewModel = WaterViewModel()
+    
     @StateObject var authHandler: AuthViewModel = AuthViewModel()
     @ObservedObject var exerciseRecc = ExerciseReccView()
     
@@ -28,10 +30,19 @@ struct HealthKitView: View {
                 .padding()
             Text("Biological Sex: \(healthKitViewModel.formattedBiologicalSex())")
                 .padding()
-            Text("Workouts: \(healthKitViewModel.formattedWorkouts())")
-                .padding()
+//            Text("Workouts: \(healthKitViewModel.formattedWorkouts())")
+//                .padding()
             Text("Calories Burned: \(healthKitViewModel.formattedCalBurned())")
                 .padding()
+            Button("Sign Out") {
+                authHandler.signOut()
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.gray.opacity(0.2))
+            .foregroundColor(.red)
+            .cornerRadius(10)
+            .padding()
 //            Button("Authorize Health Data") {
 //                healthKitViewModel.requestAuthorization()
 //            }
@@ -42,13 +53,16 @@ struct HealthKitView: View {
             Text("Daily Progress!").font(.system(size: 24)).bold()
             let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(authHandler.user?.exerciseGoal ?? 350.0)
             
-            let sleep_progress = Float(healthKitViewModel.sleepDuration / 3600) / Float(authHandler.user?.sleepGoal ?? 8.0)
             
-            // TO DO: MAKE PROGRESS VARS FOR WATER
+            //may need to update 3 oz
+            let water_progress = Float(waterViewModel.currWater.amountDrank) / Float(authHandler.user?.waterGoal ?? 3)
+            
+            let sleep_progress = Float(healthKitViewModel.sleepDuration / 3600) / Float(authHandler.user?.sleepGoal ?? 8.0)
+
             
             HStack {
                 ProgressCircle(progress: cal_progress, color: Color.green, imageName: "figure.walk")
-                ProgressCircle(progress: 0.7, color: Color.blue, imageName: "drop.fill") // Adjust
+                ProgressCircle(progress: water_progress, color: Color.blue, imageName: "drop.fill") // Adjust
                 ProgressCircle(progress: sleep_progress, color: Color.purple, imageName: "moon.zzz.fill") //
             }
         }
@@ -56,8 +70,8 @@ struct HealthKitView: View {
         .onAppear {
             healthKitViewModel.setUserId(authHandler.user ?? User.empty)
             healthKitViewModel.checkAuthorizationStatus()
+            waterViewModel.fetchCurrWater()
         }
-        
         
     }
 }
