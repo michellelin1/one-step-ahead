@@ -12,7 +12,7 @@ struct HealthKitView: View {
     @ObservedObject var healthKitViewModel = HealthKitViewModel()
     @StateObject var waterViewModel = WaterViewModel()
     
-    @StateObject var authHandler: AuthViewModel = AuthViewModel()
+    @EnvironmentObject var authHandler: AuthViewModel
     @ObservedObject var exerciseRecc = ExerciseReccView()
     
     var body: some View {
@@ -23,12 +23,14 @@ struct HealthKitView: View {
                         .font(.system(size: 30)).bold()
                         .padding()
                 }
-                GroupBoxContentView(title: "Sleep Duration", imageName: "bed.double.fill", content: "\(healthKitViewModel.formattedSleepDuration())", color: .purple)
-                GroupBoxContentView(title: "Calories Burned", imageName: "flame.fill", content: "\(healthKitViewModel.formattedCalBurned())", color: .red)
-                GroupBoxContentView(title: "Water Drank", imageName: "drop.fill", content: "\(waterViewModel.currWater.amountDrank) oz", color: .cyan)
-                GroupBoxContentView(title: "Weight", imageName: "figure.stand", content: "\(healthKitViewModel.formattedWeight())", color: .mint)
-                GroupBoxContentView(title: "Height", imageName: "figure.stand", content: "\(healthKitViewModel.formattedHeight())", color: .mint)
-                GroupBoxContentView(title: "Biological Sex", imageName: "figure.stand", content: "\(healthKitViewModel.formattedBiologicalSex())", color: .mint)
+                Group {
+                    GroupBoxContentView(title: "Sleep Duration", imageName: "bed.double.fill", content: "\(healthKitViewModel.formattedSleepDuration())", color: .purple)
+                    GroupBoxContentView(title: "Calories Burned", imageName: "flame.fill", content: "\(healthKitViewModel.formattedCalBurned())", color: .red)
+                    GroupBoxContentView(title: "Water Drank", imageName: "drop.fill", content: "\(waterViewModel.currWater.amountDrank) oz", color: .cyan)
+                    GroupBoxContentView(title: "Weight", imageName: "figure.stand", content: "\(healthKitViewModel.formattedWeight())", color: .mint)
+                    GroupBoxContentView(title: "Height", imageName: "figure.stand", content: "\(healthKitViewModel.formattedHeight())", color: .mint)
+                    GroupBoxContentView(title: "Biological Sex", imageName: "figure.stand", content: "\(healthKitViewModel.formattedBiologicalSex())", color: .mint)
+                }
                 Button("Sign Out") {
                     authHandler.signOut()
                 }
