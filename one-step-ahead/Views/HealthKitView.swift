@@ -23,21 +23,12 @@ struct HealthKitView: View {
                         .font(.system(size: 30)).bold()
                         .padding()
                 }
-                GroupBoxContentView(title: "Sleep Duration", imageName: "bed.double.fill", content: "\(healthKitViewModel.formattedSleepDuration())")
-                GroupBoxContentView(title: "Calories Burned", imageName: "flame.fill", content: "\(healthKitViewModel.formattedCalBurned())")
-                GroupBoxContentView(title: "Weight", imageName: "figure.stand", content: "\(healthKitViewModel.formattedWeight())")
-                GroupBoxContentView(title: "Height", imageName: "figure.stand", content: "\(healthKitViewModel.formattedHeight())")
-                GroupBoxContentView(title: "Biological Sex", imageName: "figure.stand", content: "\(healthKitViewModel.formattedBiologicalSex())")
-//                BubbleText(text: "Weight: \(healthKitViewModel.formattedWeight())")
-//                    .padding()
-//                BubbleText(text: "Height: \(healthKitViewModel.formattedHeight())")
-//                    .padding()
-//                BubbleText(text: "Biological Sex: \(healthKitViewModel.formattedBiologicalSex())")
-//                    .padding()
-//                //            Text("Workouts: \(healthKitViewModel.formattedWorkouts())")
-//                //                .padding()
-//                BubbleText(text:"Calories Burned: \(healthKitViewModel.formattedCalBurned())")
-//                    .padding()
+                GroupBoxContentView(title: "Sleep Duration", imageName: "bed.double.fill", content: "\(healthKitViewModel.formattedSleepDuration())", color: .purple)
+                GroupBoxContentView(title: "Calories Burned", imageName: "flame.fill", content: "\(healthKitViewModel.formattedCalBurned())", color: .red)
+                GroupBoxContentView(title: "Water Drank", imageName: "drop.fill", content: "\(waterViewModel.currWater.amountDrank) oz", color: .cyan)
+                GroupBoxContentView(title: "Weight", imageName: "figure.stand", content: "\(healthKitViewModel.formattedWeight())", color: .mint)
+                GroupBoxContentView(title: "Height", imageName: "figure.stand", content: "\(healthKitViewModel.formattedHeight())", color: .mint)
+                GroupBoxContentView(title: "Biological Sex", imageName: "figure.stand", content: "\(healthKitViewModel.formattedBiologicalSex())", color: .mint)
                 Button("Sign Out") {
                     authHandler.signOut()
                 }
@@ -47,16 +38,10 @@ struct HealthKitView: View {
                 .foregroundColor(.red)
                 .cornerRadius(10)
                 .padding()
-                //            Button("Authorize Health Data") {
-                //                healthKitViewModel.requestAuthorization()
-                //            }
-                //            .padding()
-                //            .disabled(HKHealthStore.isHealthDataAvailable())
                 Spacer()
                 
                 Text("Daily Progress!").font(.system(size: 24)).bold()
                 let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(authHandler.user?.exerciseGoal ?? 350.0)
-                
                 
                 //may need to update 3 oz
                 let water_progress = Float(waterViewModel.currWater.amountDrank) / Float(authHandler.user?.waterGoal ?? 3)
@@ -66,7 +51,7 @@ struct HealthKitView: View {
                 
                 HStack {
                     ProgressCircle(progress: cal_progress, color: Color.green, imageName: "figure.walk")
-                    ProgressCircle(progress: water_progress, color: Color.blue, imageName: "drop.fill") // Adjust
+                    ProgressCircle(progress: water_progress, color: Color.blue, imageName: "drop.fill")
                     ProgressCircle(progress: sleep_progress, color: Color.purple, imageName: "moon.zzz.fill") //
                 }
             }
@@ -84,11 +69,12 @@ struct GroupBoxContentView: View {
     let title: String
     let imageName: String
     let content: String
+    let color: Color
     
     var body: some View {
         GroupBox (
             label: Label(title, systemImage: imageName)
-                .foregroundColor(.red)
+                .foregroundColor(color)
         ) {
             Text(content)
         }
