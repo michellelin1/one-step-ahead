@@ -23,18 +23,21 @@ struct HealthKitView: View {
                         .font(.system(size: 30)).bold()
                         .padding()
                 }
-                Text("Sleep Duration: \(healthKitViewModel.formattedSleepDuration())")
-                    .padding()
-                Text("Weight: \(healthKitViewModel.formattedWeight())")
-                    .padding()
-                Text("Height: \(healthKitViewModel.formattedHeight())")
-                    .padding()
-                Text("Biological Sex: \(healthKitViewModel.formattedBiologicalSex())")
-                    .padding()
-                //            Text("Workouts: \(healthKitViewModel.formattedWorkouts())")
-                //                .padding()
-                Text("Calories Burned: \(healthKitViewModel.formattedCalBurned())")
-                    .padding()
+                GroupBoxContentView(title: "Sleep Duration", imageName: "bed.double.fill", content: "\(healthKitViewModel.formattedSleepDuration())")
+                GroupBoxContentView(title: "Calories Burned", imageName: "flame.fill", content: "\(healthKitViewModel.formattedCalBurned())")
+                GroupBoxContentView(title: "Weight", imageName: "figure.stand", content: "\(healthKitViewModel.formattedWeight())")
+                GroupBoxContentView(title: "Height", imageName: "figure.stand", content: "\(healthKitViewModel.formattedHeight())")
+                GroupBoxContentView(title: "Biological Sex", imageName: "figure.stand", content: "\(healthKitViewModel.formattedBiologicalSex())")
+//                BubbleText(text: "Weight: \(healthKitViewModel.formattedWeight())")
+//                    .padding()
+//                BubbleText(text: "Height: \(healthKitViewModel.formattedHeight())")
+//                    .padding()
+//                BubbleText(text: "Biological Sex: \(healthKitViewModel.formattedBiologicalSex())")
+//                    .padding()
+//                //            Text("Workouts: \(healthKitViewModel.formattedWorkouts())")
+//                //                .padding()
+//                BubbleText(text:"Calories Burned: \(healthKitViewModel.formattedCalBurned())")
+//                    .padding()
                 Button("Sign Out") {
                     authHandler.signOut()
                 }
@@ -76,6 +79,23 @@ struct HealthKitView: View {
         }
     }
 }
+
+struct GroupBoxContentView: View {
+    let title: String
+    let imageName: String
+    let content: String
+    
+    var body: some View {
+        GroupBox (
+            label: Label(title, systemImage: imageName)
+                .foregroundColor(.red)
+        ) {
+            Text(content)
+        }
+//        .padding()
+    }
+}
+
 
 struct ProgressCircle: View {
     var progress: Float
