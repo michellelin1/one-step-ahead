@@ -16,6 +16,7 @@ class RecommendationViewModel: ObservableObject {
     @Published var sleepHistory: [SleepDuration] = []
     @Published var exerciseHistory: [ExerciseGoal] = []
     @Published var waterHistory: [Water] = []
+    @Published var currCaloriesBurned: Double = 0
     
     private var db = Firestore.firestore()
     private var user = User.empty
@@ -63,14 +64,17 @@ class RecommendationViewModel: ObservableObject {
             let extraFromExerciseSurplus = exerciseSurplus/200 * 0.2
             let extraFromCurrCal = currCal/200 * 0.3
             
-            print("user sleep goal: \(user.sleepGoal)")
+            print("user water goal: \(user.waterGoal)")
             print("extra from sleep deficit: \(extraFromSleepDeficit)")
+            print("extra from exercise surplus: \(extraFromExerciseSurplus)")
+            print("extra from curr call: \(extraFromCurrCal)")
             
             self.waterRecommendation = user.waterGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal
             
             // update sleep goal in DB
             let todayWaterGoal = Water(amountDrank: 0, goal: Float(waterRecommendation), date: Date(), uid: user.id ?? "")
-            addToFirebase(collection: "water", obj: todayWaterGoal, date: Date())
+//            addToFirebase(collection: "water", obj: todayWaterGoal, date: Date())
+            updateGoalInFirebase(collection: "water", newGoal: self.waterRecommendation, date: Date())
         }
     }
     
@@ -93,7 +97,8 @@ class RecommendationViewModel: ObservableObject {
             
             // Update calories goal in DB
             let todayExerciseGoal = ExerciseGoal(caloriesBurned: 0, goal: calorieRecommendation, date: Date(), uid: user.id ?? "")
-            addToFirebase(collection: "exercise", obj: todayExerciseGoal, date: Date())
+//            addToFirebase(collection: "exercise", obj: todayExerciseGoal, date: Date())
+            updateGoalInFirebase(collection: "exercise", newGoal: self.calorieRecommendation, date: Date())
         }
     }
     
@@ -136,28 +141,17 @@ class RecommendationViewModel: ObservableObject {
     func calculateGradientCaloricSurplus() async -> Double {
         print("begin calculating calories burned surplus")
         // Create date range for each day
-        let today = Calendar.current.startOfDay(for: Date())
-        let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        
         do {
-            // Fetch sleep goal for that day
-            let querySnapshot = try await db.collection("exercise")
-                .whereField("uid", isEqualTo: user.id ?? "failed")
-                .whereField("date", isLessThan: Timestamp(date: nextDay))
-                .order(by: "date", descending: true)
-                .limit(to: 3)
-                .getDocuments()
-            
-            let exerciseHistory = try querySnapshot.documents.compactMap { document in
-                return try document.data(as: ExerciseGoal.self)
-            }
-            
+            await self.fetchExerciseHistory()
             let surplus = exerciseHistory.map { exercise in
                 let amt = exercise.caloriesBurned - exercise.goal
                 return amt > 0 ? amt / exercise.goal : 0
             }
-            print("calorie history \(exerciseHistory)")
+            
+//            print("calorie history \(exerciseHistory)")
             print("calorie surplus \(surplus)")
-            self.exerciseHistory = exerciseHistory
+//            self.exerciseHistory = exerciseHistory
             return calculateGradientRatio(fromRatios: surplus)
             
         } catch {
@@ -210,6 +204,30 @@ class RecommendationViewModel: ObservableObject {
     }
     
     func getCurrentCaloriesSurplus() async -> Double {
+        let currentExerciseLog = await self.fetchCurrentExerciseLog()
+        let surplus = (currentExerciseLog?.caloriesBurned ?? 0) - (currentExerciseLog?.goal ?? 0)
+        return surplus > 0 ? surplus : 0
+    }
+    
+    func getExerciseHistory() -> [ExerciseGoal] {
+        // TODO: Make sure that self.exerciseHistory has been fetched
+//        await fetchExerciseHistory()
+        
+        return self.exerciseHistory
+    }
+    
+    func getCurrentCaloriesBurned() -> Double {
+        // TODO: Make sure that self.exerciseHistory has been fetched
+//        await fetchExerciseHistory()
+        
+        print()
+        print("getting current calories burned: \(self.currCaloriesBurned)")
+        return self.currCaloriesBurned
+    }
+    
+    private func fetchCurrentExerciseLog() async -> ExerciseGoal? {
+        print("fetching current exercise log")
+        
         let today = Calendar.current.startOfDay(for: Date())
         let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: today)!
         do {
@@ -223,10 +241,39 @@ class RecommendationViewModel: ObservableObject {
             let cal = querySnapshot.documents.first.flatMap { document in
                 try? document.data(as: ExerciseGoal.self)
             }
-            let surplus = (cal?.caloriesBurned ?? 0) - (cal?.goal ?? 0)
-            return surplus > 0 ? surplus : 0
+            
+            print("current calories burned: \(cal!.caloriesBurned)")
+            self.currCaloriesBurned = cal!.caloriesBurned
+            print("self.current calories burned: \(self.currCaloriesBurned)")
+            return cal!
+            
         } catch {
-            return 0
+            print("Error fetching current exercise log")
+            return nil
+        }
+    }
+    
+    private func fetchExerciseHistory() async {
+        let today = Calendar.current.startOfDay(for: Date())
+        let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        
+        do {
+            // Fetch exercise goals and logs for previous 3 days
+            let querySnapshot = try await db.collection("exercise")
+                .whereField("uid", isEqualTo: user.id ?? "failed")
+                .whereField("date", isLessThan: Timestamp(date: nextDay))
+                .order(by: "date", descending: true)
+                .limit(to: 3)
+                .getDocuments()
+            
+            let exerciseHistory = try querySnapshot.documents.compactMap { document in
+                return try document.data(as: ExerciseGoal.self)
+            }
+            
+            print("calorie history \(exerciseHistory)")
+            self.exerciseHistory = exerciseHistory
+        } catch {
+            
         }
     }
     
@@ -240,6 +287,23 @@ class RecommendationViewModel: ObservableObject {
             try self.db.collection(collection).document(docId).setData(from: obj)
         } catch {
             print("failed to add calories to firebase")
+            print(error.localizedDescription)
+        }
+    }
+    
+    func updateGoalInFirebase(collection: String, newGoal: Double, date: Date) {
+        print("updating \(collection) info to firebase")
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM-dd-yyyy"
+        let dateStr = dateFormatter.string(from: date)
+        let docId = (self.user.id ?? "failed") + dateStr
+        
+        do {
+            let doc = try self.db.collection(collection).document(docId)
+            let fieldToUpdate = "goal"
+            try doc.updateData([fieldToUpdate: newGoal])
+        } catch {
+            print("failed to update goal to firebase")
             print(error.localizedDescription)
         }
     }

@@ -14,6 +14,9 @@ struct ExerciseView: View {
     var body: some View {
         VStack{
             Text("Exercise Recommendation: \(recommendationViewModel.calorieRecommendation)")
+            Text("Exercise history [0]: \(recommendationViewModel.getExerciseHistory().count)")
+            Text("Current calories burned: \(recommendationViewModel.getCurrentCaloriesBurned())")
+//            Text("Exercise history [1]: \(recommendationViewModel.getExerciseHistory()[1].caloriesBurned)")
         }.onAppear {
             recommendationViewModel.setUser(authHandler.user ?? User.empty)
             recommendationViewModel.getCaloriesRecommendation()
