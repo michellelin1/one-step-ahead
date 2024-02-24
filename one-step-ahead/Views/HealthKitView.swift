@@ -11,6 +11,7 @@ import HealthKit
 struct HealthKitView: View {
     @ObservedObject var healthKitViewModel = HealthKitViewModel()
     @StateObject var waterViewModel = WaterViewModel()
+    @EnvironmentObject var sleepViewModel: SleepViewModel
     
     @EnvironmentObject var authHandler: AuthViewModel
     @ObservedObject var exerciseRecc = ExerciseReccView()
@@ -25,6 +26,9 @@ struct HealthKitView: View {
                 }
                 Group {
                     GroupBoxContentView(title: "Sleep Duration", imageName: "bed.double.fill", content: "\(healthKitViewModel.formattedSleepDuration())", color: .purple)
+                    if sleepViewModel.napLength > 0 {
+                        GroupBoxContentView(title: "Nap Duration", imageName: "bed.double.fill", content: "\(sleepViewModel.formattedNapDuration())", color: .purple)
+                    }
                     GroupBoxContentView(title: "Calories Burned", imageName: "flame.fill", content: "\(healthKitViewModel.formattedCalBurned())", color: .red)
                     GroupBoxContentView(title: "Water Drank", imageName: "drop.fill", content: "\(waterViewModel.currWater.amountDrank) oz", color: .cyan)
                     GroupBoxContentView(title: "Weight", imageName: "figure.stand", content: "\(healthKitViewModel.formattedWeight())", color: .mint)
@@ -48,8 +52,7 @@ struct HealthKitView: View {
                 //may need to update 3 oz
                 let water_progress = Float(waterViewModel.currWater.amountDrank) / Float(authHandler.user?.waterGoal ?? 3)
                 
-                let sleep_progress = Float(healthKitViewModel.sleepDuration / 3600) / Float(authHandler.user?.sleepGoal ?? 8.0)
-                
+                let sleep_progress = Float((healthKitViewModel.sleepDuration +  sleepViewModel.napLength) / 3600) / Float(authHandler.user?.sleepGoal ?? 8.0)
                 
                 HStack {
                     ProgressCircle(progress: cal_progress, color: Color.green, imageName: "figure.walk")
@@ -80,8 +83,14 @@ struct GroupBoxContentView: View {
         ) {
             Text(content)
         }
-//        .padding()
     }
+}
+
+private func formatTimeInterval(_ interval: TimeInterval) -> String {
+    let formatter = DateComponentsFormatter()
+    formatter.allowedUnits = [.hour, .minute]
+    formatter.unitsStyle = .abbreviated
+    return formatter.string(from: interval) ?? "0"
 }
 
 
