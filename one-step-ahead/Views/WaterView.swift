@@ -18,12 +18,15 @@ struct WaterView: View {
             Text("Log your water intake")
                 .font(.system(size: 35))
             TextField("8 oz", text: $viewModel.amtStr)
+                .keyboardType(.decimalPad)
                 .multilineTextAlignment(.center)
                 .font(.system(size: 30))
             // TODO: Why is it defaulting to 0.0?
             Button("Save")
             {
                 viewModel.saveWater()
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) // lowers keyboard after clicking save
+                
             }
             waterHistory
         }

@@ -64,6 +64,7 @@ class WaterViewModel: ObservableObject {
                 self.currWater.id = doc.documentID
             } else {
                 try db.collection("water").document(self.currWater.id ?? "failed").setData(from: currWater)
+                
             }
         } catch {
             print(error.localizedDescription)

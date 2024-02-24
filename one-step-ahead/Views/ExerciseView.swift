@@ -15,7 +15,7 @@ struct ExerciseView: View {
     var body: some View {
         VStack{
             Text("Exercise Recommendation: \(recommendationViewModel.calorieRecommendation)")
-            Text("Exercise history [0]: \(recommendationViewModel.getExerciseHistory().count)")
+            Text("Exercise history: \(recommendationViewModel.getExerciseHistory().count)")
             Text("Current calories burned: \(healthKitViewModel.formattedCalBurned())")
 //            Text("Exercise history [1]: \(recommendationViewModel.getExerciseHistory()[1].caloriesBurned)")
 //            String(format: "%.1f calories", caloriesBurned)
