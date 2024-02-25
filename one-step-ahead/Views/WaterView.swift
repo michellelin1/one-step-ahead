@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WaterView: View {
     @ObservedObject var viewModel = WaterViewModel()
-    @ObservedObject var recommendationViewModel = RecommendationViewModel()
+    @EnvironmentObject var recommendationViewModel: RecommendationViewModel
     @EnvironmentObject var authHandler: AuthViewModel
     @State var test = ""
     var body: some View {

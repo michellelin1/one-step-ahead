@@ -9,11 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var isLoading = false
-    @StateObject var authHandler: AuthViewModel = AuthViewModel()
+    @EnvironmentObject var authHandler: AuthViewModel
     var body: some View {
-//        Button("signout") {
-//            authHandler.signOut()
-//        }
         ZStack {
             if authHandler.userSession == nil {
                 LoginView()
@@ -24,7 +21,7 @@ struct ContentView: View {
             else {
                 MainView()
                     .onAppear {
-                    startFakeNetworkCall()
+                        startFakeNetworkCall()
                     }
             }
             if isLoading {

@@ -282,13 +282,13 @@ class HealthKitViewModel: ObservableObject {
                     if let sum = result.sumQuantity() {
                         let caloriesBurned = sum.doubleValue(for: HKUnit.kilocalorie())
                         self.caloriesBurned = caloriesBurned
-                        // adding to the db
-                        let exerciseObj = ExerciseGoal(caloriesBurned: caloriesBurned, goal: self.user.exerciseGoal, date: Date(), uid: self.user.id ?? "failed")
-                        self.addToFirebase(collection: "exercise", obj: exerciseObj, date: Date())
-                        
                     } else {
                         print("No calories burned data available for today.")
                     }
+                    // adding to the db
+                    let exerciseObj = ExerciseGoal(caloriesBurned: self.caloriesBurned ?? 0, goal: self.user.exerciseGoal, date: Date(), uid: self.user.id ?? "failed")
+                    self.addToFirebase(collection: "exercise", obj: exerciseObj, date: Date())
+
                 }
 
             }

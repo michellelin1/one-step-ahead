@@ -9,7 +9,7 @@ import SwiftUI
 import HealthKit
 
 struct HealthKitView: View {
-    @ObservedObject var healthKitViewModel = HealthKitViewModel()
+    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
     @StateObject var waterViewModel = WaterViewModel()
     @EnvironmentObject var sleepViewModel: SleepViewModel
     
@@ -62,8 +62,8 @@ struct HealthKitView: View {
             }
             .padding()
             .onAppear {
-                healthKitViewModel.setUserId(authHandler.user ?? User.empty)
-                healthKitViewModel.checkAuthorizationStatus()
+//                healthKitViewModel.setUserId(authHandler.user ?? User.empty)
+//                healthKitViewModel.checkAuthorizationStatus()
                 waterViewModel.fetchCurrWater()
             }
         }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SleepView: View {
-    @ObservedObject var recommendationViewModel = RecommendationViewModel()
+    @EnvironmentObject var recommendationViewModel: RecommendationViewModel
     @EnvironmentObject var authHandler: AuthViewModel
     @EnvironmentObject var sleepViewModel: SleepViewModel
     

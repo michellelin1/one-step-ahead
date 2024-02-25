@@ -13,10 +13,14 @@ class RecommendationViewModel: ObservableObject {
     @Published var sleepRecommendation: Double = -1
     @Published var calorieRecommendation: Double = -1
     @Published var waterRecommendation: Double = -1
+    
     @Published var sleepHistory: [SleepDuration] = []
     @Published var exerciseHistory: [ExerciseGoal] = []
     @Published var waterHistory: [Water] = []
-    @Published var currCaloriesBurned: Double = 0
+    
+    @Published var currSleepDuration = SleepDuration.empty
+    @Published var currExerciseGoal = ExerciseGoal.empty
+    @Published var currWaterGoal = Water.empty
     
     private var db = Firestore.firestore()
     private var user = User.empty
@@ -24,7 +28,7 @@ class RecommendationViewModel: ObservableObject {
     func setUser(_ user: User) {
         self.user = user
     }
-    
+    // ----------- RECOMMENDATION FUNCTIONS -------------
     func getSleepRecommendation(){
         // TODO
         // get todays exercise amount
@@ -33,9 +37,7 @@ class RecommendationViewModel: ObservableObject {
             let exerciseSurplus = await calculateGradientCaloricSurplus()
             let currCal = await getCurrentCaloriesSurplus()
             let waterDeficit = await calculateGradientWaterDeficit()
-            
-//            let extraFromSleepDeficit = sleepDeficit * 0.6
-            
+                        
             let extraFromSleepDeficit = user.sleepGoal * sleepDeficit * 0.5
             // dividing by 200 = for every 100 more than goal, they get an extra 30 min of sleep
             let extraFromExerciseSurplus = exerciseSurplus/200 * 0.2
@@ -45,8 +47,9 @@ class RecommendationViewModel: ObservableObject {
             print("user sleep goal: \(user.sleepGoal)")
             print("extra from sleep deficit: \(extraFromSleepDeficit)")
             
-            self.sleepRecommendation = user.sleepGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal + extraFromWaterDeficit
-            
+            DispatchQueue.main.async {
+                self.sleepRecommendation = self.user.sleepGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal + extraFromWaterDeficit
+            }
             // update sleep goal in DB
             let todaySleepGoal = SleepDuration(sleepDuration: 0, goal: sleepRecommendation, date: Date(), uid: user.id ?? "")
             addToFirebase(collection: "sleep", obj: todaySleepGoal, date: Date())
@@ -69,11 +72,10 @@ class RecommendationViewModel: ObservableObject {
             print("extra from exercise surplus: \(extraFromExerciseSurplus)")
             print("extra from curr call: \(extraFromCurrCal)")
             
-            self.waterRecommendation = user.waterGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal
-            
+            DispatchQueue.main.async {
+                self.waterRecommendation = self.user.waterGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal
+            }
             // update sleep goal in DB
-            let todayWaterGoal = Water(amountDrank: 0, goal: Float(waterRecommendation), date: Date(), uid: user.id ?? "")
-//            addToFirebase(collection: "water", obj: todayWaterGoal, date: Date())
             updateGoalInFirebase(collection: "water", newGoal: self.waterRecommendation, date: Date())
         }
     }
@@ -91,22 +93,50 @@ class RecommendationViewModel: ObservableObject {
             let minusFromWaterDeficit = user.waterGoal * waterDeficit * 0.1
             
             print("user exercise goal: \(user.exerciseGoal)")
-//            print("extra from sleep deficit: \(extraFromSleepDeficit)")
-            self.calorieRecommendation = user.exerciseGoal - minusFromSleepDeficit - minusFromExerciseSurplus - minusFromWaterDeficit
-            
+            DispatchQueue.main.async {
+                self.calorieRecommendation = self.user.exerciseGoal - minusFromSleepDeficit - minusFromExerciseSurplus - minusFromWaterDeficit
+            }
             
             // Update calories goal in DB
-            let todayExerciseGoal = ExerciseGoal(caloriesBurned: 0, goal: calorieRecommendation, date: Date(), uid: user.id ?? "")
-//            addToFirebase(collection: "exercise", obj: todayExerciseGoal, date: Date())
             updateGoalInFirebase(collection: "exercise", newGoal: self.calorieRecommendation, date: Date())
         }
     }
     
+    // ------------ GETTER FUNCTIONS -------------
+    func getExerciseHistory() {
+        Task {
+            await fetchExerciseHistory()
+        }
+    }
+    
+    func getCurrentCaloriesBurned() {
+        Task {
+            await fetchCurrentExerciseLog()
+        }
+    }
+    
+    
+    // ----------- HELPER FUNCTIONS ---------------
     func calculateGradientSleepDeficit() async -> Double {
         print("begin calculating sleep deficits")
+        // Fetch sleep goal for that day
+        if (self.sleepHistory.count == 0) {
+            await fetchSleepHistory()
+        }
+        
+        let sleepDeficits = sleepHistory.map { sleep in
+            if (sleep.sleepDuration >= sleep.goal) {
+                return 0.0
+            }
+            return (sleep.goal - sleep.sleepDuration) / sleep.goal
+        }
+        return calculateGradientRatio(fromRatios: sleepDeficits)
+            
+    }
+    
+    private func fetchSleepHistory() async {
         let today = Calendar.current.startOfDay(for: Date())
         do {
-            // Fetch sleep goal for that day
             let querySnapshot = try await db.collection("sleep")
                 .whereField("uid", isEqualTo: user.id ?? "failed")
                 .whereField("date", isLessThan: Timestamp(date: today))
@@ -117,24 +147,12 @@ class RecommendationViewModel: ObservableObject {
             let sleepHistory = try querySnapshot.documents.compactMap { document in
                 return try document.data(as: SleepDuration.self)
             }
-            
-            let sleepDeficits = sleepHistory.map { sleep in
-                if (sleep.sleepDuration >= sleep.goal) {
-                    return 0.0
-                }
-                
-                return (sleep.goal - sleep.sleepDuration) / sleep.goal
+            DispatchQueue.main.async {
+                self.sleepHistory = sleepHistory
             }
-            
-            print("sleep history \(sleepHistory)")
-            print("sleep deficit \(sleepDeficits)")
-            print()
-            self.sleepHistory = sleepHistory
-            return calculateGradientRatio(fromRatios: sleepDeficits)
-            
         } catch {
+            print("fetch sleep error")
             print(error.localizedDescription)
-            return 0
         }
     }
     
@@ -142,31 +160,40 @@ class RecommendationViewModel: ObservableObject {
         print("begin calculating calories burned surplus")
         // Create date range for each day
         
-        do {
+        if (self.exerciseHistory.count == 0) {
             await self.fetchExerciseHistory()
-            let surplus = exerciseHistory.map { exercise in
-                let amt = exercise.caloriesBurned - exercise.goal
-                return amt > 0 ? amt / exercise.goal : 0
-            }
-            
-//            print("calorie history \(exerciseHistory)")
-            print("calorie surplus \(surplus)")
-//            self.exerciseHistory = exerciseHistory
-            return calculateGradientRatio(fromRatios: surplus)
-            
-        } catch {
-            print(error.localizedDescription)
-            return 0
         }
+        
+        let surplus = exerciseHistory.map { exercise in
+            let amt = exercise.caloriesBurned - exercise.goal
+            return amt > 0 ? amt / exercise.goal : 0
+        }
+        
+        return calculateGradientRatio(fromRatios: surplus)
     }
     
     func calculateGradientWaterDeficit() async -> Double {
         // TODO
         print("begin calculating gradient water deficit")
+        if (self.waterHistory.count == 0) {
+            await fetchWaterHistory()
+        }
         
+        let waterDeficits = self.waterHistory.map { water in
+            if (water.amountDrank >= water.goal) {
+                return 0.0
+            }
+            
+            return Double((water.goal - water.amountDrank) / water.goal)
+        }
+
+        return calculateGradientRatio(fromRatios: waterDeficits)
+            
+    }
+    
+    private func fetchWaterHistory() async {
         let today = Calendar.current.startOfDay(for: Date())
         do {
-            // Fetch sleep goal for that day
             let querySnapshot = try await db.collection("water")
                 .whereField("uid", isEqualTo: user.id ?? "failed")
                 .whereField("date", isLessThan: Timestamp(date: today))
@@ -174,34 +201,19 @@ class RecommendationViewModel: ObservableObject {
                 .limit(to: 3)
                 .getDocuments()
             
-            let waterHistory = try querySnapshot.documents.compactMap { document in
+            let waterHist = try querySnapshot.documents.compactMap { document in
                 return try document.data(as: Water.self)
             }
             
-            let waterDeficits = waterHistory.map { water in
-                if (water.amountDrank >= water.goal) {
-                    return 0.0
-                }
-                
-                return Double((water.goal - water.amountDrank) / water.goal)
+            DispatchQueue.main.async {
+                self.waterHistory = waterHist
             }
-            
-            print("water history \(waterHistory)")
-            print("water deficits \(waterDeficits)")
-            print()
-            self.waterHistory = waterHistory
-            return calculateGradientRatio(fromRatios: waterDeficits)
-            
         } catch {
+            print("error fetching water history")
             print(error.localizedDescription)
-            return 0
         }
     }
     
-    func fetchPastSleepGoals() -> [Double] {
-
-        return []
-    }
     
     func getCurrentCaloriesSurplus() async -> Double {
         let currentExerciseLog = await self.fetchCurrentExerciseLog()
@@ -209,23 +221,7 @@ class RecommendationViewModel: ObservableObject {
         return surplus > 0 ? surplus : 0
     }
     
-    func getExerciseHistory() -> [ExerciseGoal] {
-        // TODO: Make sure that self.exerciseHistory has been fetched
-//        await fetchExerciseHistory()
-        
-        return self.exerciseHistory
-    }
-    
-    func getCurrentCaloriesBurned() -> Double {
-        // TODO: Make sure that self.exerciseHistory has been fetched
-//        await fetchExerciseHistory()
-        
-        print()
-        print("getting current calories burned: \(self.currCaloriesBurned)")
-        return self.currCaloriesBurned
-    }
-    
-    private func fetchCurrentExerciseLog() async -> ExerciseGoal? {
+    func fetchCurrentExerciseLog() async -> ExerciseGoal? {
         print("fetching current exercise log")
         
         let today = Calendar.current.startOfDay(for: Date())
@@ -236,16 +232,18 @@ class RecommendationViewModel: ObservableObject {
                 .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: today))
                 .whereField("date", isLessThan: Timestamp(date: nextDay))
                 .order(by: "date", descending: true)
-                .limit(to: 3)
+                .limit(to: 1)
                 .getDocuments()
             let cal = querySnapshot.documents.first.flatMap { document in
                 try? document.data(as: ExerciseGoal.self)
             }
             
-            print("current calories burned: \(cal!.caloriesBurned)")
-            self.currCaloriesBurned = cal!.caloriesBurned
-            print("self.current calories burned: \(self.currCaloriesBurned)")
-            return cal!
+            DispatchQueue.main.async {
+                print("current calories burned: \(cal?.caloriesBurned ?? 0)")
+                self.currExerciseGoal = cal ?? ExerciseGoal.empty
+            }
+            
+            return cal
             
         } catch {
             print("Error fetching current exercise log")
@@ -270,8 +268,9 @@ class RecommendationViewModel: ObservableObject {
                 return try document.data(as: ExerciseGoal.self)
             }
             
-            print("calorie history \(exerciseHistory)")
-            self.exerciseHistory = exerciseHistory
+            DispatchQueue.main.async {
+                self.exerciseHistory = exerciseHistory
+            }
         } catch {
             
         }
@@ -298,14 +297,9 @@ class RecommendationViewModel: ObservableObject {
         let dateStr = dateFormatter.string(from: date)
         let docId = (self.user.id ?? "failed") + dateStr
         
-        do {
-            let doc = try self.db.collection(collection).document(docId)
-            let fieldToUpdate = "goal"
-            try doc.updateData([fieldToUpdate: newGoal])
-        } catch {
-            print("failed to update goal to firebase")
-            print(error.localizedDescription)
-        }
+        let doc = self.db.collection(collection).document(docId)
+        let fieldToUpdate = "goal"
+        doc.updateData([fieldToUpdate: newGoal])
     }
     
     func calculateGradientRatio(fromRatios ratios: [Double]) -> Double {

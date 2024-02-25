@@ -16,3 +16,7 @@ struct ExerciseGoal: Codable, Identifiable {
     var date: Date
     var uid: String
 }
+
+extension ExerciseGoal {
+    static var empty = ExerciseGoal(caloriesBurned: 0, goal: 0, date: Date(), uid: "exercise")
+}

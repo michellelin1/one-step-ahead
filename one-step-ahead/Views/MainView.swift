@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MainView: View {
+    @EnvironmentObject var hkViewModel: HealthKitViewModel
+    @EnvironmentObject var authHandler: AuthViewModel
     var body: some View {
         TabView {
             DashboardView()
@@ -35,6 +37,9 @@ struct MainView: View {
                     Image(systemName: "person.fill")
                     Text("profile")
                 }
+        }.onAppear {
+            hkViewModel.setUserId(authHandler.user ?? User.empty)
+            hkViewModel.checkAuthorizationStatus()
         }
     }
 }
