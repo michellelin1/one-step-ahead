@@ -97,6 +97,7 @@ struct ProgressCircle: View {
     var progress: Float
     var color: Color
     var imageName: String
+    var size: CGFloat = 80
     
     var body: some View {
         VStack {
@@ -104,20 +105,20 @@ struct ProgressCircle: View {
                 Circle()
                     .stroke(
                         color.opacity(0.5),
-                        lineWidth: 10
+                        lineWidth: size/10
                     )
-                    .frame(width: 80, height: 80)
+                    .frame(width: size, height: size)
                 Circle()
                     .trim(from: 0, to: CGFloat(progress))
                     .stroke(
                         color,
                         style: StrokeStyle(
-                            lineWidth: 10,
+                            lineWidth: size/10,
                             lineCap: .round
                         )
                     )
                     .rotationEffect(.degrees(-90))
-                    .frame(width: 80, height: 80)
+                    .frame(width: size, height: size)
                 
                 Image(systemName: imageName)
                     .font(.largeTitle)

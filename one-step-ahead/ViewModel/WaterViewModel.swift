@@ -61,7 +61,7 @@ class WaterViewModel: ObservableObject {
 
     func saveWater() {
         do {
-            self.currWater.amountDrank = Float(amtStr) ?? self.currWater.amountDrank
+            self.currWater.amountDrank = Double(amtStr) ?? self.currWater.amountDrank
             if self.currWater.id == nil {
                 let doc = try db.collection("water").addDocument(from: currWater)
                 self.currWater.id = doc.documentID

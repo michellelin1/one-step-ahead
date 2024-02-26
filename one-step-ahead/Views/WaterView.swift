@@ -8,51 +8,47 @@
 import SwiftUI
 
 struct WaterView: View {
-    @ObservedObject var viewModel = WaterViewModel()
     @EnvironmentObject var recommendationViewModel: RecommendationViewModel
-    @State var test = ""
+    @State var amtStr = ""
     var body: some View {
         VStack(alignment: .center) {
             Text("Water Recommendation: \(recommendationViewModel.waterRecommendation)")
+            Text("current water intake: \(recommendationViewModel.currWaterGoal.amountDrank)")
             Text("Log your water intake")
                 .font(.system(size: 35))
-            TextField("8 oz", text: $viewModel.amtStr)
-                .keyboardType(.decimalPad)
-                .multilineTextAlignment(.center)
-                .font(.system(size: 30))
-            // TODO: Why is it defaulting to 0.0?
-            Button("Save")
+            ProgressCircle(progress: Float(recommendationViewModel.currWaterGoal.amountDrank/recommendationViewModel.waterRecommendation), color: Color.blue, imageName: "drop.fill", size: 200)
+            Button("+")
             {
-                viewModel.saveWater()
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) // lowers keyboard after clicking save
+                recommendationViewModel.updateWaterDrank(amt: 2)
                 
             }
-            waterHistory
+            //waterHistory
         }
         .onAppear {
             recommendationViewModel.getWaterRecommendation()
-            viewModel.fetchCurrWater()
-            viewModel.fetchWaterHistory()
+            recommendationViewModel.getCurrentWater()
+            //viewModel.fetchCurrWater()
+            //viewModel.fetchWaterHistory()
         }
         .padding()
     }
     
-    var waterHistory: some View {
-        VStack() {
-            Text("Water History")
-                .font(.system(size: 25))
-                .padding()
-            ForEach(viewModel.waterHistory) { water in
-                VStack {
-                    Text("\(viewModel.dateFormater(water.date))")
-                    Text("\(viewModel.getTruncatedWaterValueString(water.amountDrank)) of \(viewModel.getTruncatedWaterValueString(water.goal)) cups")
-                    Text("\(viewModel.getGoalMetOrUnmetString(dailyWater: water))")
-                }
-                .background(viewModel.wasGoalMet(dailyWater: water) ? .green : .red)
-                .padding()
-            }
-        }
-    }
+//    var waterHistory: some View {
+//        VStack() {
+//            Text("Water History")
+//                .font(.system(size: 25))
+//                .padding()
+//            ForEach(viewModel.waterHistory) { water in
+//                VStack {
+//                    Text("\(viewModel.dateFormater(water.date))")
+//                    Text("\(viewModel.getTruncatedWaterValueString(water.amountDrank)) of \(viewModel.getTruncatedWaterValueString(water.goal)) cups")
+//                    Text("\(viewModel.getGoalMetOrUnmetString(dailyWater: water))")
+//                }
+//                .background(viewModel.wasGoalMet(dailyWater: water) ? .green : .red)
+//                .padding()
+//            }
+//        }
+//    }
 }
 
 struct WaterView_Previews: PreviewProvider {

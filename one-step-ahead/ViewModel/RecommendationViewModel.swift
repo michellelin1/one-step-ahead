@@ -140,7 +140,19 @@ class RecommendationViewModel: ObservableObject {
         }
     }
     
+    func updateWaterDrank(amt: Double) {
+        print("updating water amt drank")
+        self.currWaterGoal.amountDrank += amt
+        do {
+            try db.collection("water").document(self.currWaterGoal.id ?? "update-failed").setData(from: self.currWaterGoal)
+        } catch {
+            print("failed to update water amt")
+            print(error.localizedDescription)
+        }
+    }
+    
     func updateSleep(napTime: TimeInterval) {
+        print("updating nap time")
         self.currSleepDuration.napTime = napTime
         do {
             try db.collection("sleep").document(self.currSleepDuration.id ?? "update-failed").setData(from: self.currSleepDuration)
@@ -262,7 +274,6 @@ class RecommendationViewModel: ObservableObject {
         } catch {
             print(error.localizedDescription)
         }
-        
     }
     
     private func fetchWaterHistory() async {
@@ -353,7 +364,7 @@ class RecommendationViewModel: ObservableObject {
     }
     
     private func updateGoalInFirebase(collection: String, newGoal: Double, date: Date) {
-        print("updating \(collection) info to firebase")
+        print("updating \(collection) goal to firebase")
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM-dd-yyyy"
         let dateStr = dateFormatter.string(from: date)
@@ -368,7 +379,7 @@ class RecommendationViewModel: ObservableObject {
                     let fieldToUpdate = "goal"
                     try await doc.updateData([fieldToUpdate: newGoal])
                 } else {
-                    try doc.setData(from: Water(amountDrank: 0, goal: Float(newGoal), date: Date(), uid: user.id ?? "failed"))
+                    try doc.setData(from: Water(amountDrank: 0, goal: Double(newGoal), date: Date(), uid: user.id ?? "failed"))
                 }
             } catch {
                 print(error.localizedDescription)

@@ -11,8 +11,8 @@ import FirebaseFirestoreSwift
 
 struct Water: Codable, Identifiable {
     @DocumentID var id: String?
-    var amountDrank: Float
-    var goal: Float
+    var amountDrank: Double
+    var goal: Double
     var date: Date
     var uid: String
 }
