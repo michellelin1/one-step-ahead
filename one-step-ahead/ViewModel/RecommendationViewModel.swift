@@ -27,7 +27,21 @@ class RecommendationViewModel: ObservableObject {
     
     func setUser(_ user: User) {
         self.user = user
+        self.sleepRecommendation = user.sleepGoal
+        self.calorieRecommendation = user.exerciseGoal
+        self.waterRecommendation = user.waterGoal
     }
+    
+    func initializeAllRec() {
+        getSleepRecommendation()
+        getWaterRecommendation()
+        getCaloriesRecommendation()
+        
+        getCurrentSleepDuration()
+        getCurrentCaloriesBurned()
+        getCurrentWater()
+    }
+    
     // ----------- RECOMMENDATION FUNCTIONS -------------
     func getSleepRecommendation(){
         // TODO
@@ -49,10 +63,10 @@ class RecommendationViewModel: ObservableObject {
             
             DispatchQueue.main.async {
                 self.sleepRecommendation = self.user.sleepGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal + extraFromWaterDeficit
+                // update sleep goal in DB
+                let todaySleepGoal = SleepDuration(sleepDuration: 0, goal: self.sleepRecommendation, date: Date(), uid: self.user.id ?? "")
+                self.addToFirebase(collection: "sleep", obj: todaySleepGoal, date: Date())
             }
-            // update sleep goal in DB
-            let todaySleepGoal = SleepDuration(sleepDuration: 0, goal: sleepRecommendation, date: Date(), uid: user.id ?? "")
-            addToFirebase(collection: "sleep", obj: todaySleepGoal, date: Date())
         }
     }
     
@@ -74,9 +88,9 @@ class RecommendationViewModel: ObservableObject {
             
             DispatchQueue.main.async {
                 self.waterRecommendation = self.user.waterGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal
+                // update sleep goal in DB
+                self.updateGoalInFirebase(collection: "water", newGoal: self.waterRecommendation, date: Date())
             }
-            // update sleep goal in DB
-            updateGoalInFirebase(collection: "water", newGoal: self.waterRecommendation, date: Date())
         }
     }
     
@@ -95,14 +109,13 @@ class RecommendationViewModel: ObservableObject {
             print("user exercise goal: \(user.exerciseGoal)")
             DispatchQueue.main.async {
                 self.calorieRecommendation = self.user.exerciseGoal - minusFromSleepDeficit - minusFromExerciseSurplus - minusFromWaterDeficit
+                // Update calories goal in DB
+                self.updateGoalInFirebase(collection: "exercise", newGoal: self.calorieRecommendation, date: Date())
             }
-            
-            // Update calories goal in DB
-            updateGoalInFirebase(collection: "exercise", newGoal: self.calorieRecommendation, date: Date())
         }
     }
     
-    // ------------ GETTER FUNCTIONS -------------
+    // ------------ GETTER + SETTER FUNCTIONS -------------
     func getExerciseHistory() {
         Task {
             await fetchExerciseHistory()
@@ -115,9 +128,30 @@ class RecommendationViewModel: ObservableObject {
         }
     }
     
+    func getCurrentSleepDuration() {
+        Task {
+            await fetchCurrentSleepDuration()
+        }
+    }
+    
+    func getCurrentWater() {
+        Task {
+            await fetchCurrWater()
+        }
+    }
+    
+    func updateSleep(napTime: TimeInterval) {
+        self.currSleepDuration.napTime = napTime
+        do {
+            try db.collection("sleep").document(self.currSleepDuration.id ?? "update-failed").setData(from: self.currSleepDuration)
+        } catch {
+            print("failed setting update sleep")
+            print(error.localizedDescription)
+        }
+    }
     
     // ----------- HELPER FUNCTIONS ---------------
-    func calculateGradientSleepDeficit() async -> Double {
+    private func calculateGradientSleepDeficit() async -> Double {
         print("begin calculating sleep deficits")
         // Fetch sleep goal for that day
         if (self.sleepHistory.count == 0) {
@@ -132,6 +166,25 @@ class RecommendationViewModel: ObservableObject {
         }
         return calculateGradientRatio(fromRatios: sleepDeficits)
             
+    }
+    
+    private func fetchCurrentSleepDuration() async {
+        print("fetching current sleep log")
+        let today = Calendar.current.startOfDay(for: Date())
+        let prevDay = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+    
+        let docId = getDocId(date: prevDay)
+        let doc = self.db.collection("sleep").document(docId)
+        
+        do {
+            let sleep = try await doc.getDocument(as: SleepDuration.self)
+            DispatchQueue.main.async {
+                print("current sleep duration: \(sleep.sleepDuration)")
+                self.currSleepDuration = sleep
+            }
+        } catch {
+            print("Error fetching current sleep log")
+        }
     }
     
     private func fetchSleepHistory() async {
@@ -156,7 +209,7 @@ class RecommendationViewModel: ObservableObject {
         }
     }
     
-    func calculateGradientCaloricSurplus() async -> Double {
+    private func calculateGradientCaloricSurplus() async -> Double {
         print("begin calculating calories burned surplus")
         // Create date range for each day
         
@@ -172,7 +225,7 @@ class RecommendationViewModel: ObservableObject {
         return calculateGradientRatio(fromRatios: surplus)
     }
     
-    func calculateGradientWaterDeficit() async -> Double {
+    private func calculateGradientWaterDeficit() async -> Double {
         // TODO
         print("begin calculating gradient water deficit")
         if (self.waterHistory.count == 0) {
@@ -189,6 +242,27 @@ class RecommendationViewModel: ObservableObject {
 
         return calculateGradientRatio(fromRatios: waterDeficits)
             
+    }
+    
+    private func fetchCurrWater() async {
+        let today = Calendar.current.startOfDay(for: Date())
+        do {
+            let querySnapshot = try await db.collection("water")
+                                        .whereField("uid", isEqualTo: user.id ?? "failed")
+                                        .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: today))
+                                        .limit(to: 1)
+                                        .getDocuments()
+            let water = querySnapshot.documents.first.flatMap { document in
+                try? document.data(as: Water.self)
+            }
+            
+            DispatchQueue.main.async {
+                self.currWaterGoal = water ?? self.currWaterGoal
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+        
     }
     
     private func fetchWaterHistory() async {
@@ -215,36 +289,24 @@ class RecommendationViewModel: ObservableObject {
     }
     
     
-    func getCurrentCaloriesSurplus() async -> Double {
+    private func getCurrentCaloriesSurplus() async -> Double {
         let currentExerciseLog = await self.fetchCurrentExerciseLog()
         let surplus = (currentExerciseLog?.caloriesBurned ?? 0) - (currentExerciseLog?.goal ?? 0)
         return surplus > 0 ? surplus : 0
     }
     
-    func fetchCurrentExerciseLog() async -> ExerciseGoal? {
+    private func fetchCurrentExerciseLog() async -> ExerciseGoal? {
         print("fetching current exercise log")
+        let docId = getDocId(date: Date())
+        let doc = self.db.collection("exercise").document(docId)
         
-        let today = Calendar.current.startOfDay(for: Date())
-        let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: today)!
         do {
-            let querySnapshot = try await db.collection("exercise")
-                .whereField("uid", isEqualTo: user.id ?? "failed")
-                .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: today))
-                .whereField("date", isLessThan: Timestamp(date: nextDay))
-                .order(by: "date", descending: true)
-                .limit(to: 1)
-                .getDocuments()
-            let cal = querySnapshot.documents.first.flatMap { document in
-                try? document.data(as: ExerciseGoal.self)
-            }
-            
+            let exercise = try await doc.getDocument(as: ExerciseGoal.self)
             DispatchQueue.main.async {
-                print("current calories burned: \(cal?.caloriesBurned ?? 0)")
-                self.currExerciseGoal = cal ?? ExerciseGoal.empty
+                print("current exercise goal: \(exercise.caloriesBurned)")
+                self.currExerciseGoal = exercise
             }
-            
-            return cal
-            
+            return exercise
         } catch {
             print("Error fetching current exercise log")
             return nil
@@ -276,7 +338,7 @@ class RecommendationViewModel: ObservableObject {
         }
     }
     
-    func addToFirebase(collection: String, obj: Codable, date: Date) {
+    private func addToFirebase(collection: String, obj: Codable, date: Date) {
         print("adding \(collection) info to firebase")
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM-dd-yyyy"
@@ -290,19 +352,31 @@ class RecommendationViewModel: ObservableObject {
         }
     }
     
-    func updateGoalInFirebase(collection: String, newGoal: Double, date: Date) {
+    private func updateGoalInFirebase(collection: String, newGoal: Double, date: Date) {
         print("updating \(collection) info to firebase")
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM-dd-yyyy"
         let dateStr = dateFormatter.string(from: date)
         let docId = (self.user.id ?? "failed") + dateStr
-        
         let doc = self.db.collection(collection).document(docId)
-        let fieldToUpdate = "goal"
-        doc.updateData([fieldToUpdate: newGoal])
+        
+        // checking if the doc exists; if not create
+        Task {
+            do {
+                let documentSnapshot = try await doc.getDocument()
+                if (documentSnapshot.exists) {
+                    let fieldToUpdate = "goal"
+                    try await doc.updateData([fieldToUpdate: newGoal])
+                } else {
+                    try doc.setData(from: Water(amountDrank: 0, goal: Float(newGoal), date: Date(), uid: user.id ?? "failed"))
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
     
-    func calculateGradientRatio(fromRatios ratios: [Double]) -> Double {
+    private func calculateGradientRatio(fromRatios ratios: [Double]) -> Double {
         var gradientRatio: Double = 0
         var numDaysBeforeToday = 1
         for ratio in ratios {
@@ -316,4 +390,11 @@ class RecommendationViewModel: ObservableObject {
         return gradientRatio
     }
     
+    private func getDocId(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM-dd-yyyy"
+        let dateStr = dateFormatter.string(from: date)
+        let docId = (self.user.id ?? "failed") + dateStr
+        return docId
+    }
 }

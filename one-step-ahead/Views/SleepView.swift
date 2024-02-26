@@ -58,6 +58,9 @@ struct SleepView: View {
                     }
                     .pickerStyle(WheelPickerStyle())
                     .frame(width: 80).clipped()
+                    Button("save") {
+                        recommendationViewModel.updateSleep(napTime: sleepViewModel.napLength)
+                    }
                 }
                 
                 // Display selected nap length
@@ -66,8 +69,8 @@ struct SleepView: View {
             }
             
         }.onAppear {
-            recommendationViewModel.setUser(authHandler.user ?? User.empty)
             recommendationViewModel.getSleepRecommendation()
+            recommendationViewModel.getCurrentSleepDuration()
         }
     }
     private func formatTimeInterval(_ interval: TimeInterval) -> String {

@@ -10,7 +10,6 @@ import SwiftUI
 struct WaterView: View {
     @ObservedObject var viewModel = WaterViewModel()
     @EnvironmentObject var recommendationViewModel: RecommendationViewModel
-    @EnvironmentObject var authHandler: AuthViewModel
     @State var test = ""
     var body: some View {
         VStack(alignment: .center) {
@@ -31,11 +30,9 @@ struct WaterView: View {
             waterHistory
         }
         .onAppear {
+            recommendationViewModel.getWaterRecommendation()
             viewModel.fetchCurrWater()
             viewModel.fetchWaterHistory()
-            recommendationViewModel.setUser(authHandler.user ?? User.empty)
-            recommendationViewModel.getWaterRecommendation()
-            
         }
         .padding()
     }

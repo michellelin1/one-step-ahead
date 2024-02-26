@@ -10,6 +10,7 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject var hkViewModel: HealthKitViewModel
     @EnvironmentObject var authHandler: AuthViewModel
+    @EnvironmentObject var recViewModel: RecommendationViewModel
     var body: some View {
         TabView {
             DashboardView()
@@ -40,6 +41,8 @@ struct MainView: View {
         }.onAppear {
             hkViewModel.setUserId(authHandler.user ?? User.empty)
             hkViewModel.checkAuthorizationStatus()
+            recViewModel.setUser(authHandler.user ?? User.empty)
+            recViewModel.initializeAllRec()
         }
     }
 }

@@ -21,7 +21,6 @@ struct ExerciseView: View {
 //            Text("Exercise history [1]: \(recommendationViewModel.getExerciseHistory()[1].caloriesBurned)")
 //            String(format: "%.1f calories", caloriesBurned)
         }.onAppear {
-            recommendationViewModel.setUser(authHandler.user ?? User.empty)
             recommendationViewModel.getCaloriesRecommendation()
             recommendationViewModel.getCurrentCaloriesBurned()
         }
