@@ -16,10 +16,10 @@ class SleepViewModel: ObservableObject {
         return TimeInterval(selectedHours * 3600 + selectedMinutes * 60)
     }
     
-    func formattedNapDuration() -> String {
+    func formattedNapDuration(_ napTime: TimeInterval) -> String {
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .full
         formatter.allowedUnits = [.hour, .minute]
-        return formatter.string(from: napLength) ?? "N/A"
+        return formatter.string(from: napTime) ?? "N/A"
     }
 }

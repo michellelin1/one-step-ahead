@@ -22,12 +22,16 @@ struct one_step_aheadApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject var authHandler = AuthViewModel()
     @StateObject var sleepViewModel = SleepViewModel()
+    @StateObject var hkViewModel = HealthKitViewModel()
+    @StateObject var recViewModel = RecommendationViewModel()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(authHandler)
                 .environmentObject(sleepViewModel)
+                .environmentObject(hkViewModel)
+                .environmentObject(recViewModel)
                         
         }
     }

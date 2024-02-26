@@ -9,10 +9,10 @@ import SwiftUI
 import HealthKit
 
 struct HealthKitView: View {
-    @ObservedObject var healthKitViewModel = HealthKitViewModel()
+    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
     @StateObject var waterViewModel = WaterViewModel()
     @EnvironmentObject var sleepViewModel: SleepViewModel
-    
+    @EnvironmentObject var recViewModel: RecommendationViewModel
     @EnvironmentObject var authHandler: AuthViewModel
     @ObservedObject var exerciseRecc = ExerciseReccView()
     
@@ -26,11 +26,11 @@ struct HealthKitView: View {
                 }
                 Group {
                     GroupBoxContentView(title: "Sleep Duration", imageName: "bed.double.fill", content: "\(healthKitViewModel.formattedSleepDuration())", color: .purple)
-                    if sleepViewModel.napLength > 0 {
-                        GroupBoxContentView(title: "Nap Duration", imageName: "bed.double.fill", content: "\(sleepViewModel.formattedNapDuration())", color: .purple)
+                    if recViewModel.currSleepDuration.napTime != nil {
+                        GroupBoxContentView(title: "Nap Duration", imageName: "bed.double.fill", content: "\(sleepViewModel.formattedNapDuration(recViewModel.currSleepDuration.napTime ?? 0))", color: .purple)
                     }
                     GroupBoxContentView(title: "Calories Burned", imageName: "flame.fill", content: "\(healthKitViewModel.formattedCalBurned())", color: .red)
-                    GroupBoxContentView(title: "Water Drank", imageName: "drop.fill", content: "\(waterViewModel.currWater.amountDrank) oz", color: .cyan)
+                    GroupBoxContentView(title: "Water Drank", imageName: "drop.fill", content: "\(recViewModel.currWaterGoal.amountDrank) oz", color: .cyan)
                     GroupBoxContentView(title: "Weight", imageName: "figure.stand", content: "\(healthKitViewModel.formattedWeight())", color: .mint)
                     GroupBoxContentView(title: "Height", imageName: "figure.stand", content: "\(healthKitViewModel.formattedHeight())", color: .mint)
                     GroupBoxContentView(title: "Biological Sex", imageName: "figure.stand", content: "\(healthKitViewModel.formattedBiologicalSex())", color: .mint)
@@ -47,12 +47,12 @@ struct HealthKitView: View {
                 Spacer()
                 
                 Text("Daily Progress!").font(.system(size: 24)).bold()
-                let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(authHandler.user?.exerciseGoal ?? 350.0)
+                let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(recViewModel.calorieRecommendation)
                 
                 //may need to update 3 oz
-                let water_progress = Float(waterViewModel.currWater.amountDrank) / Float(authHandler.user?.waterGoal ?? 3)
+                let water_progress = Float(recViewModel.currWaterGoal.amountDrank) / Float(recViewModel.waterRecommendation)
                 
-                let sleep_progress = Float((healthKitViewModel.sleepDuration +  sleepViewModel.napLength) / 3600) / Float(authHandler.user?.sleepGoal ?? 8.0)
+                let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration) / Float(recViewModel.sleepRecommendation)
                 
                 HStack {
                     ProgressCircle(progress: cal_progress, color: Color.green, imageName: "figure.walk")
@@ -62,9 +62,8 @@ struct HealthKitView: View {
             }
             .padding()
             .onAppear {
-                healthKitViewModel.setUserId(authHandler.user ?? User.empty)
-                healthKitViewModel.checkAuthorizationStatus()
-                waterViewModel.fetchCurrWater()
+                // recViewModel.initializeAllRec()
+                recViewModel.getCurrentWater()
             }
         }
     }

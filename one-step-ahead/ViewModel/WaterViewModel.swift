@@ -30,8 +30,10 @@ class WaterViewModel: ObservableObject {
                 let water = querySnapshot.documents.first.flatMap { document in
                     try? document.data(as: Water.self)
                 }
-                self.currWater = water ?? self.currWater
-                self.amtStr = String(currWater.amountDrank)
+                DispatchQueue.main.async {
+                    self.currWater = water ?? self.currWater
+                    self.amtStr = String(self.currWater.amountDrank)
+                }
             } catch {
                 print(error.localizedDescription)
             }
@@ -47,6 +49,7 @@ class WaterViewModel: ObservableObject {
                                             .order(by: "date", descending: true)
                                             .limit(to: 3)
                                             .getDocuments()
+                
                 waterHistory = try querySnapshot.documents.compactMap { document in
                     return try document.data(as: Water.self)
                 }

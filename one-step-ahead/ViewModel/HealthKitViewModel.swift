@@ -176,7 +176,7 @@ class HealthKitViewModel: ObservableObject {
                     
                     let sleepDurationObj = SleepDuration(sleepDuration: self.sleepDuration/3600, goal: self.user.sleepGoal, date: sampleIntervalStartDate, uid: self.user.id ?? "failed")
 //                    let prevDay = Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
-                    self.addToFirebase(collection: "sleep", obj: sleepDurationObj, date: sampleIntervalStartDate)
+                    self.addToFirebase(collection: "sleep", obj: sleepDurationObj, amt: self.sleepDuration/3600, date: sampleIntervalStartDate)
                     print("sleepDurationObj duration: \(sleepDurationObj.sleepDuration)")
                     print("sleepDurationObj date: \(sleepDurationObj.date)")
                     self.sleepDurationFetched = true
@@ -282,13 +282,13 @@ class HealthKitViewModel: ObservableObject {
                     if let sum = result.sumQuantity() {
                         let caloriesBurned = sum.doubleValue(for: HKUnit.kilocalorie())
                         self.caloriesBurned = caloriesBurned
-                        // adding to the db
-                        let exerciseObj = ExerciseGoal(caloriesBurned: caloriesBurned, goal: self.user.exerciseGoal, date: Date(), uid: self.user.id ?? "failed")
-                        self.addToFirebase(collection: "exercise", obj: exerciseObj, date: Date())
-                        
                     } else {
                         print("No calories burned data available for today.")
                     }
+                    // adding to the db
+                    let exerciseObj = ExerciseGoal(caloriesBurned: self.caloriesBurned ?? 0, goal: self.user.exerciseGoal, date: Date(), uid: self.user.id ?? "failed")
+                    self.addToFirebase(collection: "exercise", obj: exerciseObj, amt: self.caloriesBurned ?? 0, date: Date())
+
                 }
 
             }
@@ -296,17 +296,31 @@ class HealthKitViewModel: ObservableObject {
         healthStore.execute(query)
     }
     
-    func addToFirebase(collection: String, obj: Codable, date: Date) {
+    func addToFirebase(collection: String, obj: Codable, amt: Double, date: Date) {
         print("adding \(collection) info to firebase")
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM-dd-yyyy"
         let dateStr = dateFormatter.string(from: date)
         let docId = (self.user.id ?? "failed") + dateStr
-        do {
-            try self.db.collection(collection).document(docId).setData(from: obj)
-        } catch {
-            print("failed to add calories to firebase")
-            print(error.localizedDescription)
+        let doc = db.collection(collection).document(docId)
+        
+        Task {
+            do {
+                let documentSnapshot = try await doc.getDocument()
+                if (documentSnapshot.exists) {
+                    print("document exists")
+                    var fieldToUpdate = "caloriesBurned"
+                    if collection == "sleep" {
+                        fieldToUpdate = "sleepDuration"
+                    }
+                    try await doc.updateData([fieldToUpdate: amt])
+                } else {
+                    print("doc doesn't exist")
+                    try doc.setData(from: obj)
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
 }

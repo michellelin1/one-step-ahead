@@ -8,21 +8,21 @@
 import SwiftUI
 
 struct ExerciseView: View {
-    @ObservedObject var recommendationViewModel = RecommendationViewModel()
+    @EnvironmentObject var recommendationViewModel: RecommendationViewModel
     @EnvironmentObject var authHandler: AuthViewModel
-    @ObservedObject var healthKitViewModel = HealthKitViewModel()
+    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
     
     var body: some View {
         VStack{
             Text("Exercise Recommendation: \(recommendationViewModel.calorieRecommendation)")
-            Text("Exercise history: \(recommendationViewModel.getExerciseHistory().count)")
+            // Text("Exercise history: \(recommendationViewModel.getExerciseHistory().count)")
             Text("Current calories burned: \(healthKitViewModel.formattedCalBurned())")
+            Text("Current calories burned rec: \(recommendationViewModel.currExerciseGoal.caloriesBurned)")
 //            Text("Exercise history [1]: \(recommendationViewModel.getExerciseHistory()[1].caloriesBurned)")
 //            String(format: "%.1f calories", caloriesBurned)
         }.onAppear {
-            recommendationViewModel.setUser(authHandler.user ?? User.empty)
             recommendationViewModel.getCaloriesRecommendation()
-            healthKitViewModel.fetchCaloriesBurned()
+            recommendationViewModel.getCurrentCaloriesBurned()
         }
     }
 }
