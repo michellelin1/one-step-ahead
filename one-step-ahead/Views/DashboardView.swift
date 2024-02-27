@@ -6,12 +6,21 @@
 //
 
 import SwiftUI
+import CoreLocation
+import CoreLocationUI
 
 struct DashboardView: View {
-    @StateObject var authHandler: AuthViewModel = AuthViewModel()
     @ObservedObject var exerciseRecc = ExerciseReccView()
-    
-    let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
+
+    @StateObject var waterViewModel = WaterViewModel()
+    @State var weather: ResponseBody?
+
+    @EnvironmentObject var locationManager: LocationManager
+    @EnvironmentObject var authHandler: AuthViewModel
+    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
+
+    var weatherManager = WeatherManager()
+
     let buttonColors: [Color] = [.green, .blue, .purple, .pink]
     
     
@@ -19,68 +28,99 @@ struct DashboardView: View {
         NavigationView{
             VStack {
                 ScrollView {
-                VStack(alignment: .leading) {
-                    Text("Welcome back, \(authHandler.user?.firstName ?? "User")!")
-                        .font(.system(size: 30))
-                        .padding()
-                }
-
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
-                        
-                        NavigationLink(destination: ExerciseView()) {
-                            buttonContent(imageName: "figure.walk.circle", text: "exercise activity", backgroundColor: buttonColors[0])
-                        }
-                        NavigationLink(destination: WaterView()) {
-                            buttonContent(imageName: "drop.circle", text: "water intake", backgroundColor: buttonColors[1])
-                        }
-                        NavigationLink(destination: SleepView()) {
-                            buttonContent(imageName: "moon.circle", text: "sleep patterns", backgroundColor: buttonColors[2])
-                        }
-                        NavigationLink(destination: HealthKitView()) {
-                            buttonContent(imageName: "person.circle", text: "profile", backgroundColor: buttonColors[3])
-                        }
-                        .padding()
-                    }
-                    .padding()
-                    .onAppear {
-                        exerciseRecc.generateRecommendations(for: authHandler.user)
-                    }
                     VStack(alignment: .leading) {
-                        Text("Recommendations")
-                            .font(.system(size: 30)).bold()
+                        Text("Welcome back, \(authHandler.user?.firstName ?? "User")!")
+                            .font(.system(size: 30))
                             .padding()
                     }
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text("Exercises")
-                                .font(.system(size: 24)).underline()
-                                .padding(.leading) // Add padding to align the text
-                            Spacer()
-                        }
-                        Spacer()
-                        ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
-                            VStack(alignment: .leading) {
-                                Text(exercise.name)
-                                    .padding(.leading) // Add padding to align the text
+                    
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
+                            
+                            NavigationLink(destination: ExerciseView()) {
+                                buttonContent(imageName: "figure.walk.circle", text: "exercise activity", backgroundColor: buttonColors[0])
+                            }
+                            NavigationLink(destination: WaterView()) {
+                                buttonContent(imageName: "drop.circle", text: "water intake", backgroundColor: buttonColors[1])
+                            }
+                            NavigationLink(destination: SleepView()) {
+                                buttonContent(imageName: "moon.circle", text: "sleep patterns", backgroundColor: buttonColors[2])
+                            }
+                            NavigationLink(destination: HealthKitView()) {
+                                buttonContent(imageName: "person.circle", text: "profile", backgroundColor: buttonColors[3])
                             }
                             .padding()
-                            .background(Color.gray.opacity(0.2)) // Background color for the box
-                            .cornerRadius(8) // Add corner radius for the box
-                            .padding(.horizontal)
                         }
+                        .padding()
+                        .onAppear {
+                            // figure out why first opening app doesnt generate anything
+                            exerciseRecc.generateRecommendations(for: authHandler.user, healthKitViewModel: healthKitViewModel)
+                        }
+                        VStack(alignment: .leading) {
+                            Text("Recommendations")
+                                .font(.system(size: 30)).bold()
+                                .padding()
+                        }
+                        
+                        VStack {
+                            Text("Please allow for best reccomendations")
+                                .padding()
+                        }
+                        .multilineTextAlignment(.center)
+                        
+                        LocationButton(.shareCurrentLocation) {
+                            locationManager.requestLocation()
+                        }
+                        .cornerRadius(30)
+                        .symbolVariant(.fill)
+                        .foregroundColor(.white)
+                        
+                        if let location = locationManager.location {
+                            
+    //                        Text("Your coordinate are:\(location.longitude), \(location.latitude)")
+                            if let weather = weather {
+                                WeatherView(weather: weather)}
+                            else {
+                                LoadingView()
+                                    .task {
+                                        do {
+                                            if let location = locationManager.location {
+                                                weather = try await weatherManager.getCurrentWeather(latitude: location.latitude, longitude: location.longitude)
+                                            }
+                                        } catch {
+                                            print("Error getting weather:\(error)")
+                                        }
+                                    }
+                            }
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text("Exercises")
+                                    .font(.system(size: 24)).underline()
+                                    .padding(.leading) // Add padding to align the text
+                                Spacer()
+                            }
+                            Spacer()
+                            ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
+                                VStack(alignment: .leading) {
+                                    Text(exercise.name)
+                                        .padding() // Add padding to align the text
+                                }
+    //                            .padding()
+                                .background(Color.gray.opacity(0.2)) // Background color for the box
+                                .cornerRadius(8) // Add corner radius for the box
+                                .padding(.horizontal)
+                            }
+                        }
+                        
+                        Spacer()
                     }
-                    
-                    Spacer()
-                }
-                .navigationTitle("Dashboard")
-                
-                    
+                    .navigationTitle("Dashboard")
                 }
             }
-        
-        }
-    
     }
+}
+
     
 
                     
@@ -105,6 +145,8 @@ private func buttonContent(imageName: String, text: String, backgroundColor: Col
 
 
 
-#Preview {
-    DashboardView()
+struct DashboardView_Previews: PreviewProvider {
+    static var previews: some View {
+        DashboardView()
+    }
 }

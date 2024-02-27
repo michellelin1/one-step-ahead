@@ -11,6 +11,7 @@ struct MainView: View {
     @EnvironmentObject var hkViewModel: HealthKitViewModel
     @EnvironmentObject var authHandler: AuthViewModel
     @EnvironmentObject var recViewModel: RecommendationViewModel
+//    @StateObject var exerciseRecc = ExerciseReccView()
     var body: some View {
         TabView {
             DashboardView()
@@ -43,6 +44,7 @@ struct MainView: View {
             hkViewModel.checkAuthorizationStatus()
             recViewModel.setUser(authHandler.user ?? User.empty)
             recViewModel.initializeAllRec()
+//            exerciseRecc.generateRecommendations(for: authHandler.user, healthKitViewModel: hkViewModel)
         }
     }
 }

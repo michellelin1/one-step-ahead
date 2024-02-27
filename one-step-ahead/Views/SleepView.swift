@@ -48,7 +48,7 @@ struct SleepView: View {
                         }
                     }
                     .pickerStyle(WheelPickerStyle())
-                    .frame(width: 80).clipped()
+                    .frame(width: 100).clipped()
                     
                     // Picker for selecting minutes
                     Picker("Minutes", selection: $sleepViewModel.selectedMinutes) {
@@ -57,7 +57,7 @@ struct SleepView: View {
                         }
                     }
                     .pickerStyle(WheelPickerStyle())
-                    .frame(width: 80).clipped()
+                    .frame(width: 100).clipped()
                     Button("save") {
                         recommendationViewModel.updateSleep(napTime: sleepViewModel.napLength)
                     }

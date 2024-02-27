@@ -10,6 +10,8 @@ import SwiftUI
 struct ContentView: View {
     @State private var isLoading = false
     @EnvironmentObject var authHandler: AuthViewModel
+    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
+
     var body: some View {
         ZStack {
             if authHandler.userSession == nil {

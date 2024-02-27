@@ -1,0 +1,39 @@
+{
+    "location": {
+        "name": "Irvine",
+        "region": "California",
+        "country": "USA",
+        "lat": 33.65,
+        "lon": -117.82,
+        "tz_id": "America/Los_Angeles",
+        "localtime_epoch": 1708817530,
+        "localtime": "2024-02-24 15:32"
+    },
+    "current": {
+        "last_updated_epoch": 1708817400,
+        "last_updated": "2024-02-24 15:30",
+        "temp_c": 23.3,
+        "temp_f": 73.9,
+        "is_day": 1,
+        "condition": {
+            "text": "Partly cloudy",
+            "icon": "//cdn.weatherapi.com/weather/64x64/day/116.png",
+            "code": 1003
+        },
+        "wind_mph": 2.2,
+        "wind_kph": 3.6,
+        "wind_degree": 241,
+        "wind_dir": "WSW",
+        "pressure_mb": 1016.0,
+        "pressure_in": 29.99,
+        "precip_mm": 0.0,
+        "precip_in": 0.0,
+        "humidity": 32,
+        "cloud": 75,
+        "feelslike_c": 24.6,
+        "feelslike_f": 76.3,
+        "uv": 6.0,
+        "gust_mph": 8.7,
+        "gust_kph": 14.0
+    }
+}

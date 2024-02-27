@@ -24,6 +24,7 @@ struct one_step_aheadApp: App {
     @StateObject var sleepViewModel = SleepViewModel()
     @StateObject var hkViewModel = HealthKitViewModel()
     @StateObject var recViewModel = RecommendationViewModel()
+    @StateObject var locationManager = LocationManager()
     
     var body: some Scene {
         WindowGroup {
@@ -32,6 +33,7 @@ struct one_step_aheadApp: App {
                 .environmentObject(sleepViewModel)
                 .environmentObject(hkViewModel)
                 .environmentObject(recViewModel)
+                .environmentObject(locationManager)
                         
         }
     }

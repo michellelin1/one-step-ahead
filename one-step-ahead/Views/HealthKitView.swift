@@ -7,14 +7,19 @@
 
 import SwiftUI
 import HealthKit
+import CoreLocation
+import CoreLocationUI
 
 struct HealthKitView: View {
-    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
+    @ObservedObject var exerciseRecc = ExerciseReccView()
+
     @StateObject var waterViewModel = WaterViewModel()
+
+    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
     @EnvironmentObject var sleepViewModel: SleepViewModel
     @EnvironmentObject var recViewModel: RecommendationViewModel
     @EnvironmentObject var authHandler: AuthViewModel
-    @ObservedObject var exerciseRecc = ExerciseReccView()
+
     
     var body: some View {
         ScrollView {
@@ -35,6 +40,10 @@ struct HealthKitView: View {
                     GroupBoxContentView(title: "Height", imageName: "figure.stand", content: "\(healthKitViewModel.formattedHeight())", color: .mint)
                     GroupBoxContentView(title: "Biological Sex", imageName: "figure.stand", content: "\(healthKitViewModel.formattedBiologicalSex())", color: .mint)
                 }
+
+
+                
+                
                 Button("Sign Out") {
                     authHandler.signOut()
                 }
@@ -52,7 +61,8 @@ struct HealthKitView: View {
                 //may need to update 3 oz
                 let water_progress = Float(recViewModel.currWaterGoal.amountDrank) / Float(recViewModel.waterRecommendation)
                 
-                let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration) / Float(recViewModel.sleepRecommendation)
+                // figure out why the progress ring isnt working properly 
+                let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + ((recViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recViewModel.sleepRecommendation)
                 
                 HStack {
                     ProgressCircle(progress: cal_progress, color: Color.green, imageName: "figure.walk")
@@ -97,6 +107,7 @@ struct ProgressCircle: View {
     var progress: Float
     var color: Color
     var imageName: String
+    var imageSize: CGFloat = 40
     var size: CGFloat = 80
     
     var body: some View {
@@ -105,7 +116,7 @@ struct ProgressCircle: View {
                 Circle()
                     .stroke(
                         color.opacity(0.5),
-                        lineWidth: size/10
+                        lineWidth: size/8
                     )
                     .frame(width: size, height: size)
                 Circle()
@@ -113,7 +124,7 @@ struct ProgressCircle: View {
                     .stroke(
                         color,
                         style: StrokeStyle(
-                            lineWidth: size/10,
+                            lineWidth: size/8,
                             lineCap: .round
                         )
                     )
@@ -121,7 +132,7 @@ struct ProgressCircle: View {
                     .frame(width: size, height: size)
                 
                 Image(systemName: imageName)
-                    .font(.largeTitle)
+                    .font(.system(size: imageSize))
                     .foregroundColor(color)
             }
             .padding()

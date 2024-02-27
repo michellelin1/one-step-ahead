@@ -4,24 +4,26 @@
 //
 //  Created by Meggie Nguyen on 2/19/24.
 //
-//import SwiftUI
 import Foundation
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 
 class ExerciseReccView: ObservableObject {
-    @Published var healthKitViewModel = HealthKitViewModel()
+//    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
     @Published var userSession: FirebaseAuth.User?
     @Published var cal_remaining: Float = 350.0
     @Published var recommendedExercises: [Exercise] = []
     
+    
     // Function to generate recommendations based on user preferences
-    func generateRecommendations(for user: User?) {
+    func generateRecommendations(for user: User?, healthKitViewModel: HealthKitViewModel) {
         // can fix 350 to one recc by body mass
-        let cal_remaining = Float(user?.exerciseGoal ?? 350.0) - Float(healthKitViewModel.caloriesBurned ?? 0.0)
-        
-        if cal_remaining < 50.0 {
+        cal_remaining = Float(user?.exerciseGoal ?? 350.0) - Float(healthKitViewModel.caloriesBurned ?? 0.0)
+        if cal_remaining <= 0 {
+            recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "None" }
+        }
+        else if cal_remaining < 50.0 {
             recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "Light" }
         }
         else if cal_remaining < 150.0 {
@@ -40,6 +42,7 @@ struct Exercise: Hashable {
     let intensity: String // light, moderate, heavy
     
     static let dummyExercises: [Exercise] = [
+        Exercise(name: "Relax! Goal Completed", difficulty: "None", intensity: "None"),
         Exercise(name: "Push-ups", difficulty: "Intermediate", intensity: "Light"),
         Exercise(name: "Running", difficulty: "Beginner", intensity: "Heavy"), // 200 cal 20 mins
         Exercise(name: "Yoga", difficulty: "Beginner", intensity: "Moderate"), // 50-100 cal 15 mins
