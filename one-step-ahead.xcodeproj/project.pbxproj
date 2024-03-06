@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1F30E55A2B8D512200367B66 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E5592B8D512200367B66 /* WeatherManager.swift */; };
-		1F30E55C2B8D513F00367B66 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E55B2B8D513F00367B66 /* LocationManager.swift */; };
 		1F30E55E2B8D515100367B66 /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E55D2B8D515100367B66 /* WeatherView.swift */; };
 		1F31411F2B757EE500F33741 /* HealthKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F31411E2B757EE500F33741 /* HealthKitView.swift */; };
 		1F77CB882B8454E000EE7FEC /* ExerciseRecc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F77CB872B8454E000EE7FEC /* ExerciseRecc.swift */; };
 		1F79DC982B87DC0400A35831 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F79DC972B87DC0400A35831 /* Launch Screen.storyboard */; };
+		1FA8C8772B8DC7BE00EB95D4 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA8C8762B8DC7BE00EB95D4 /* LocationManager.swift */; };
+		1FA8C8792B8DC7F100EB95D4 /* WeatherManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA8C8782B8DC7F100EB95D4 /* WeatherManager.swift */; };
 		322D4B302B6DBB0C0084E091 /* one_step_aheadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322D4B2F2B6DBB0C0084E091 /* one_step_aheadApp.swift */; };
 		322D4B322B6DBB0C0084E091 /* WaterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 322D4B312B6DBB0C0084E091 /* WaterView.swift */; };
 		322D4B342B6DBB0F0084E091 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 322D4B332B6DBB0F0084E091 /* Assets.xcassets */; };
@@ -63,13 +63,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1F30E5592B8D512200367B66 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WeatherManager.swift; path = ../../WeatherManager.swift; sourceTree = "<group>"; };
-		1F30E55B2B8D513F00367B66 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LocationManager.swift; path = ../../LocationManager.swift; sourceTree = "<group>"; };
 		1F30E55D2B8D515100367B66 /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
 		1F31411B2B757E2B00F33741 /* one-step-ahead.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "one-step-ahead.entitlements"; sourceTree = "<group>"; };
 		1F31411E2B757EE500F33741 /* HealthKitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitView.swift; sourceTree = "<group>"; };
 		1F77CB872B8454E000EE7FEC /* ExerciseRecc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseRecc.swift; sourceTree = "<group>"; };
 		1F79DC972B87DC0400A35831 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		1FA8C8762B8DC7BE00EB95D4 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		1FA8C8782B8DC7F100EB95D4 /* WeatherManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherManager.swift; sourceTree = "<group>"; };
 		322D4B2C2B6DBB0C0084E091 /* one-step-ahead.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "one-step-ahead.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		322D4B2F2B6DBB0C0084E091 /* one_step_aheadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = one_step_aheadApp.swift; sourceTree = "<group>"; };
 		322D4B312B6DBB0C0084E091 /* WaterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterView.swift; sourceTree = "<group>"; };
@@ -230,8 +230,8 @@
 				322D4B792B7370F70084E091 /* ExerciseModel.swift */,
 				32A727BB2B835F480082CDA1 /* UserModel.swift */,
 				E26253642B85C545000B8246 /* SleepDurationModel.swift */,
-				1F30E5592B8D512200367B66 /* WeatherManager.swift */,
-				1F30E55B2B8D513F00367B66 /* LocationManager.swift */,
+				1FA8C8782B8DC7F100EB95D4 /* WeatherManager.swift */,
+				1FA8C8762B8DC7BE00EB95D4 /* LocationManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -388,7 +388,7 @@
 				322D4B742B73704D0084E091 /* SleepViewModel.swift in Sources */,
 				322D4B652B6DC2DC0084E091 /* WaterViewModel.swift in Sources */,
 				322D4B322B6DBB0C0084E091 /* WaterView.swift in Sources */,
-				1F30E55A2B8D512200367B66 /* WeatherManager.swift in Sources */,
+				1FA8C8792B8DC7F100EB95D4 /* WeatherManager.swift in Sources */,
 				322D4B6E2B736BA40084E091 /* SleepView.swift in Sources */,
 				322D4B702B736BBB0084E091 /* ExerciseView.swift in Sources */,
 				1F31411F2B757EE500F33741 /* HealthKitView.swift in Sources */,
@@ -397,6 +397,7 @@
 				322D4B782B7370E40084E091 /* SleepModel.swift in Sources */,
 				1F30E55E2B8D515100367B66 /* WeatherView.swift in Sources */,
 				322D4B7A2B7370F70084E091 /* ExerciseModel.swift in Sources */,
+				1FA8C8772B8DC7BE00EB95D4 /* LocationManager.swift in Sources */,
 				E28B16DB2B7AE318001BE1BF /* HealthKitViewModel.swift in Sources */,
 				322D4B762B73706C0084E091 /* ExerciseViewModel.swift in Sources */,
 				322D4B7F2B784EE80084E091 /* ContentView.swift in Sources */,
@@ -406,7 +407,6 @@
 				32A727BC2B835F480082CDA1 /* UserModel.swift in Sources */,
 				E26253672B85C563000B8246 /* RecommendationViewModel.swift in Sources */,
 				322D4B722B736BDC0084E091 /* LoginView.swift in Sources */,
-				1F30E55C2B8D513F00367B66 /* LocationManager.swift in Sources */,
 				E28B16DD2B7B0529001BE1BF /* OnboardingView.swift in Sources */,
 				322D4B672B6DC3050084E091 /* WaterModel.swift in Sources */,
 				E26253652B85C545000B8246 /* SleepDurationModel.swift in Sources */,
