@@ -6,12 +6,24 @@
 //
 
 import SwiftUI
+import Charts
 
 struct WaterView: View {
     @EnvironmentObject var recommendationViewModel: RecommendationViewModel
     @State var amtStr = ""
+    struct WaterData: Identifiable {
+        var date: String
+        var count: Double
+        var id = UUID()
+    }
+    var water_data: [WaterData] = [
+        .init(date: "2/1", count: 5),
+        .init(date: "2/2", count: 4),
+        .init(date: "2/3", count: 6)
+    ]
     var body: some View {
         VStack(alignment: .center) {
+            
             Text("Water Recommendation: \(recommendationViewModel.waterRecommendation)")
             Text("Current Water Intake: \(recommendationViewModel.currWaterGoal.amountDrank)")
             Text("Log Your Water Intake!")
@@ -36,6 +48,26 @@ struct WaterView: View {
                         .font(.system(size: 70)) // Adjust the font size as needed
                     //                    .padding() // Add padding to increase the size of the button
                 }
+            }
+            Chart { // chart with dummy data
+                ForEach(water_data) { water in
+                    BarMark(
+                        x: .value("Date", water.date),
+                        y: .value("Total Count", water.count)
+                    )
+                }
+//                BarMark(
+//                    x: .value("Date", data[0].type),
+//                    y: .value("Total Count", data[0].count)
+//                )
+//                BarMark(
+//                     x: .value("Date", data[1].type),
+//                     y: .value("Total Count", data[1].count)
+//                )
+//                BarMark(
+//                     x: .value("Date", data[2].type),
+//                     y: .value("Total Count", data[2].count)
+//                )
             }
             //waterHistory
         }
