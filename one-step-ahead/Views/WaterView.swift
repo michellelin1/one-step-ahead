@@ -24,31 +24,36 @@ struct WaterView: View {
     var body: some View {
         VStack(alignment: .center) {
             
-            Text("Water Recommendation: \(recommendationViewModel.waterRecommendation)")
-            Text("Current Water Intake: \(recommendationViewModel.currWaterGoal.amountDrank)")
-            Text("Log Your Water Intake!")
-                .font(.system(size: 35))
-                .padding(.bottom)
+//            Text("Water Recommendation: \(recommendationViewModel.waterRecommendation)")
+//            Text("Current Water Intake: \(recommendationViewModel.currWaterGoal.amountDrank)")
+            VStack(alignment: .leading) {
+                Text("Log Your Water Intake!")
+                    .font(.system(size: 30))
+                    .padding()
+            }
             ProgressCircle(progress: Float(recommendationViewModel.currWaterGoal.amountDrank/recommendationViewModel.waterRecommendation), color: Color.blue, imageName: "drop.fill", imageSize: 80, size: 180)
                 .frame(width: 200, height: 200)
-                .padding()
+                .padding(.top)
             HStack {
-                Button(action: {
-                    recommendationViewModel.updateWaterDrank(amt: 2)
-                }) {
-                    Text("+")
-                        .font(.system(size: 70)) // Adjust the font size as needed
-                    //                    .padding() // Add padding to increase the size of the button
-                }
-                .padding()
                 Button(action: {
                     recommendationViewModel.updateWaterDrank(amt: -2)
                 }) {
                     Text("−")
-                        .font(.system(size: 70)) // Adjust the font size as needed
-                    //                    .padding() // Add padding to increase the size of the button
+                        .font(.system(size: 70))
                 }
+                
+                Button(action: {
+                    recommendationViewModel.updateWaterDrank(amt: 2)
+                }) {
+                    Text("+")
+                        .font(.system(size: 70))
+                }
+                .padding(.bottom)
             }
+            
+            Text("Water Recommendation: \(recommendationViewModel.waterRecommendation)")
+            Text("Current Water Intake: \(String(format: "%.2f", recommendationViewModel.currWaterGoal.amountDrank)) ounces")
+               
             Chart { // chart with dummy data
                 ForEach(water_data) { water in
                     BarMark(
