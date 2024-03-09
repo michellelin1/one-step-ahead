@@ -18,6 +18,7 @@ struct DashboardView: View {
     @EnvironmentObject var locationManager: LocationManager
     @EnvironmentObject var authHandler: AuthViewModel
     @EnvironmentObject var healthKitViewModel: HealthKitViewModel
+    @EnvironmentObject var recViewModel: RecommendationViewModel
 
     var weatherManager = WeatherManager()
 
@@ -33,20 +34,26 @@ struct DashboardView: View {
                             .font(.system(size: 30))
                             .padding()
                     }
+                    let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(recViewModel.calorieRecommendation)
+                    
+                    let water_progress = Float(recViewModel.currWaterGoal.amountDrank) / Float(recViewModel.waterRecommendation)
+                    
+                    let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + ((recViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recViewModel.sleepRecommendation)
+                    
                     
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
                             
                             NavigationLink(destination: ExerciseView()) {
-                                buttonContent(imageName: "figure.walk.circle", text: "exercise activity", backgroundColor: buttonColors[0])
+                                buttonContent(imageName: "figure.walk", text: "exercise activity", backgroundColor: buttonColors[0], progress: cal_progress)
                             }
                             NavigationLink(destination: WaterView()) {
-                                buttonContent(imageName: "drop.circle", text: "water intake", backgroundColor: buttonColors[1])
+                                buttonContent(imageName: "drop.fill", text: "water intake", backgroundColor: buttonColors[1], progress: water_progress)
                             }
                             NavigationLink(destination: SleepView()) {
-                                buttonContent(imageName: "moon.circle", text: "sleep patterns", backgroundColor: buttonColors[2])
+                                buttonContent(imageName: "moon.zzz.fill", text: "sleep patterns", backgroundColor: buttonColors[2], progress: sleep_progress)
                             }
                             NavigationLink(destination: HealthKitView()) {
-                                buttonContent(imageName: "person.circle", text: "profile", backgroundColor: buttonColors[3])
+                                buttonContent(imageName: "person.circle", text: "profile", backgroundColor: buttonColors[3], progress: nil)
                             }
                             .padding()
                         }
@@ -121,25 +128,32 @@ struct DashboardView: View {
     }
 }
 
-    
+
 
                     
-private func buttonContent(imageName: String, text: String, backgroundColor: Color) -> some View {
+private func buttonContent(imageName: String, text: String, backgroundColor: Color, progress: Float?) -> some View {
+    
     VStack {
-        Image(systemName: imageName)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 100, height: 100)
-            .padding(.horizontal, 10)
-            .foregroundColor(Color.white) // color of the icons
-        
+//
+//
+        if let progress = progress {
+            ProgressCircle(progress: progress, color: backgroundColor, imageName: imageName)
+        }
+        else {
+            Image(systemName: imageName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 100, height: 100)
+                        .padding(.horizontal, 10)
+                        .foregroundColor(Color.pink) // color of the icons
+        }
         Text(text)
-            .foregroundColor(Color.white)
+            .foregroundColor(Color.primary)
             .padding(.horizontal, 2)
     }
     .frame(width: 132, height: 150)
     .padding()
-    .background(backgroundColor) // Customize the background color if needed
+    .background(Color.gray.opacity(0.10)) // Customize the background color if needed
     .cornerRadius(10)
 }
 
