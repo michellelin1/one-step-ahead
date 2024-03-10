@@ -13,7 +13,7 @@ struct ContentView: View {
     @EnvironmentObject var healthKitViewModel: HealthKitViewModel
 
     var body: some View {
-        ZStack {
+        Group {
             if authHandler.userSession == nil {
                 LoginView()
             }
@@ -22,16 +22,13 @@ struct ContentView: View {
             }
             else {
                 MainView()
-                    .onAppear {
-                        startFakeNetworkCall()
-                    }
+//                    .onAppear {
+//                        startFakeNetworkCall()
+//                    }
             }
-            if isLoading {
-                LoadingView()
-                
-            }
+            
         }
-            .onAppear{startFakeNetworkCall()}
+//            .onAppear{startFakeNetworkCall()}
     }
     
     func startFakeNetworkCall() {

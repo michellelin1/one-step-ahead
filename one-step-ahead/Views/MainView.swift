@@ -13,33 +13,46 @@ struct MainView: View {
     @EnvironmentObject var recViewModel: RecommendationViewModel
 //    @StateObject var exerciseRecc = ExerciseReccView()
     var body: some View {
-        TabView {
-            DashboardView()
-                .tabItem {
-                    Image(systemName: "house.fill")
-                    Text("dashboard")
+        Group {
+            if (recViewModel.sleepRecommendation != -1 &&
+                recViewModel.waterRecommendation != -1 &&
+                recViewModel.calorieRecommendation != -1 &&
+                recViewModel.weekOfSleep.count > 0 &&
+                recViewModel.weekOfExercise.count > 0 &&
+                recViewModel.weekOfWater.count > 0
+            ){
+                TabView {
+                    DashboardView()
+                        .tabItem {
+                            Image(systemName: "house.fill")
+                            Text("dashboard")
+                        }
+                    ExerciseView()
+                        .tabItem {
+                            Image(systemName: "figure.walk")
+                            Text("exercise")
+                        }
+                    WaterView()
+                        .tabItem {
+                            Image(systemName: "drop.fill")
+                            Text("water")
+                        }
+                    SleepView()
+                        .tabItem {
+                            Image(systemName: "moon.zzz.fill")
+                            Text("sleep")
+                        }
+                    HealthKitView()
+                        .tabItem {
+                            Image(systemName: "person.fill")
+                            Text("profile")
+                        }
                 }
-            ExerciseView()
-                .tabItem {
-                    Image(systemName: "figure.walk")
-                    Text("exercise")
-                }
-            WaterView()
-                .tabItem {
-                    Image(systemName: "drop.fill")
-                    Text("water")
-                }
-            SleepView()
-                .tabItem {
-                    Image(systemName: "moon.zzz.fill")
-                    Text("sleep")
-                }
-            HealthKitView()
-                .tabItem {
-                    Image(systemName: "person.fill")
-                    Text("profile")
-                }
-        }.onAppear {
+            } else {
+                LoadingView()
+            }
+        }
+        .onAppear {
             hkViewModel.setUserId(authHandler.user ?? User.empty)
             hkViewModel.checkAuthorizationStatus()
             recViewModel.setUser(authHandler.user ?? User.empty)

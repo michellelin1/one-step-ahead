@@ -22,14 +22,18 @@ class RecommendationViewModel: ObservableObject {
     @Published var currExerciseGoal = ExerciseGoal.empty
     @Published var currWaterGoal = Water.empty
     
+    @Published var weekOfSleep: [SleepDuration] = []
+    @Published var weekOfExercise: [ExerciseGoal] = []
+    @Published var weekOfWater: [Water] = []
+    
     private var db = Firestore.firestore()
     private var user = User.empty
     
     func setUser(_ user: User) {
         self.user = user
-        self.sleepRecommendation = user.sleepGoal
-        self.calorieRecommendation = user.exerciseGoal
-        self.waterRecommendation = user.waterGoal
+        // self.sleepRecommendation = user.sleepGoal
+        // self.calorieRecommendation = user.exerciseGoal
+        // self.waterRecommendation = user.waterGoal
     }
     
     func initializeAllRec() {
@@ -40,6 +44,98 @@ class RecommendationViewModel: ObservableObject {
         getCurrentSleepDuration()
         getCurrentCaloriesBurned()
         getCurrentWater()
+        
+        getWeekOfSleep()
+        getWeekOfExercise()
+        getWeekOfWater()
+    }
+    
+    func getWeekOfSleep() {
+        Task {
+            do {
+                let querySnapshot = try await db.collection("sleep")
+                    .whereField("uid", isEqualTo: user.id ?? "failed")
+                    .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: startOfWeek()))
+                    .order(by: "date", descending: false)
+                    .getDocuments()
+                
+                let sleepHistory = try querySnapshot.documents.compactMap { document in
+                    return try document.data(as: SleepDuration.self)
+                }
+                
+                DispatchQueue.main.async {
+                    self.weekOfSleep = Array(repeating: SleepDuration.empty, count: 7)
+                    for s in sleepHistory {
+                        let weekday = Calendar.current.component(.weekday, from: s.date)
+                        self.weekOfSleep[weekday-1] = s
+                    }
+                }
+            } catch {
+                print("fetch sleep error")
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func getWeekOfExercise() {
+        Task {
+            do {
+                let querySnapshot = try await db.collection("exercise")
+                    .whereField("uid", isEqualTo: user.id ?? "failed")
+                    .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: startOfWeek()))
+                    .order(by: "date", descending: false)
+                    .getDocuments()
+                
+                let exerciseHistory = try querySnapshot.documents.compactMap { document in
+                    return try document.data(as: ExerciseGoal.self)
+                }
+                
+                DispatchQueue.main.async {
+                    self.weekOfExercise = Array(repeating: ExerciseGoal.empty, count: 7)
+                    for e in exerciseHistory {
+                        let weekday = Calendar.current.component(.weekday, from: e.date)
+                        self.weekOfExercise[weekday-1] = e
+                    }
+                }
+            } catch {
+                print("fetch exercise week error \(error.localizedDescription)")
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func getWeekOfWater() {
+        Task {
+            do {
+                let querySnapshot = try await db.collection("water")
+                    .whereField("uid", isEqualTo: user.id ?? "failed")
+                    .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: startOfWeek()))
+                    .order(by: "date", descending: false)
+                    .getDocuments()
+                
+                let waterHistory = try querySnapshot.documents.compactMap { document in
+                    return try document.data(as: Water.self)
+                }
+                
+                DispatchQueue.main.async {
+                    self.weekOfWater = Array(repeating: Water.empty, count: 7)
+                    for w in waterHistory {
+                        let weekday = Calendar.current.component(.weekday, from: w.date)
+                        self.weekOfWater[weekday-1] = w
+                    }
+                }
+            } catch {
+                print("fetch sleep error")
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func startOfWeek() -> Date {
+        let calendar = Calendar.current
+        let now = Date()
+        let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now)
+        return calendar.date(from: components)!
     }
     
     // ----------- RECOMMENDATION FUNCTIONS -------------
