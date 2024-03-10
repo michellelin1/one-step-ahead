@@ -18,5 +18,5 @@ struct ExerciseGoal: Codable, Identifiable {
 }
 
 extension ExerciseGoal {
-    static var empty = ExerciseGoal(caloriesBurned: 0, goal: 0, date: Date(), uid: "exercise")
+    static var empty = ExerciseGoal(caloriesBurned: 0, goal: 1, date: Date(), uid: "exercise")
 }

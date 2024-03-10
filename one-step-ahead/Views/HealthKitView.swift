@@ -106,9 +106,10 @@ private func formatTimeInterval(_ interval: TimeInterval) -> String {
 struct ProgressCircle: View {
     var progress: Float
     var color: Color
-    var imageName: String
+    var imageName: String = ""
     var imageSize: CGFloat = 40
     var size: CGFloat = 80
+    var hideProgress = false
     
     var body: some View {
         VStack {
@@ -131,23 +132,27 @@ struct ProgressCircle: View {
                     .rotationEffect(.degrees(-90))
                     .frame(width: size, height: size)
                 
-                Image(systemName: imageName)
-                    .font(.system(size: imageSize))
-                    .foregroundColor(color)
+                if imageName != "" {
+                    Image(systemName: imageName )
+                        .font(.system(size: imageSize))
+                        .foregroundColor(color)
+                }
             }
-            .padding()
+            .padding([.top, .bottom], size/8)
             
             // Text below the progress circle
-            if progress >= 1.0 {
-                Text("Completed!")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            } else {
-                Text("Progress: \(Int(progress * 100))%")
-//                Text("Progress: \((progress * 100))%")
-
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            if !hideProgress {
+                if progress >= 1.0 {
+                    Text("Completed!")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("Progress: \(Int(progress * 100))%")
+                    //                Text("Progress: \((progress * 100))%")
+                    
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
                
         }

@@ -18,5 +18,5 @@ struct Water: Codable, Identifiable {
 }
 
 extension Water {
-    static var empty = Water(amountDrank: 0, goal: 0, date: Date(), uid: "water-empty")
+    static var empty = Water(amountDrank: 0, goal: 1, date: Date(), uid: "water-empty")
 }

@@ -19,5 +19,5 @@ struct SleepDuration: Codable, Identifiable {
 }
 
 extension SleepDuration {
-    static var empty = SleepDuration(sleepDuration: 0, goal: 0, date: Date(), uid: "sleep-empty")
+    static var empty = SleepDuration(sleepDuration: 0, goal: 1, date: Date(), uid: "sleep-empty")
 }

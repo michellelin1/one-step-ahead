@@ -29,6 +29,7 @@ struct DashboardView: View {
         NavigationView{
             VStack {
                 ScrollView {
+                    WeeklyProgressView()
                     VStack(alignment: .leading) {
                         Text("Welcome back, \(authHandler.user?.firstName ?? "User")!")
                             .font(.system(size: 30))
