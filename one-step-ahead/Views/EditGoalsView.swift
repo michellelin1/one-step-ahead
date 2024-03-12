@@ -29,22 +29,22 @@ struct EditGoalsView: View {
     var body: some View {
         Form {
             Section(header: Text("User Information")) {
-                TextField("First name", text: $firstName)
-                TextField("Last name", text: $lastName)
+                TextField(initialFirstName, text: $firstName)
+                TextField(initialLastName, text: $lastName)
             }
             Section(header: Text("Goals")) {
                 LabeledContent("Sleep Goal") {
-                    TextField("8 hrs", text: $sleepGoal)
+                    TextField(initialSleepGoal, text: $sleepGoal)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
                 }
                 LabeledContent("Exercise Goal") {
-                    TextField("350 Cal", text: $calorieGoal)
+                    TextField(initialCalorieGoal, text: $calorieGoal)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
                 }
                 LabeledContent("Hydration Goal") {
-                    TextField("48 oz", text: $hydrationGoal)
+                    TextField(initialHydrationGoal, text: $hydrationGoal)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
                 }
