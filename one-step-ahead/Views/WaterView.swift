@@ -36,7 +36,7 @@ struct WaterView: View {
                 .padding(.top)
             HStack {
                 Button(action: {
-                    recommendationViewModel.updateWaterDrank(amt: -2)
+                    recommendationViewModel.updateWaterDrank(amt: -1)
                 }) {
                     Text("−")
                         .font(.system(size: 70))

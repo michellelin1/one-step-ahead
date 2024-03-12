@@ -14,16 +14,28 @@ struct ExerciseView: View {
     
     var body: some View {
         VStack{
+            VStack(alignment: .leading) {
+                Text("Get Moving!")
+                    .font(.system(size: 30))
+                    .padding()
+            }
+            
+             ProgressCircle(progress: Float(recommendationViewModel.currExerciseGoal.caloriesBurned/recommendationViewModel.calorieRecommendation), color: Color.green, imageName: "figure.walk", imageSize: 80, size: 180)
+            .frame(width: 200, height: 200)
+            .padding()
+            
             Text("Exercise Recommendation: \(recommendationViewModel.calorieRecommendation)")
             // Text("Exercise history: \(recommendationViewModel.getExerciseHistory().count)")
             Text("Current calories burned: \(healthKitViewModel.formattedCalBurned())")
             Text("Current calories burned rec: \(recommendationViewModel.currExerciseGoal.caloriesBurned)")
+            Spacer()
 //            Text("Exercise history [1]: \(recommendationViewModel.getExerciseHistory()[1].caloriesBurned)")
 //            String(format: "%.1f calories", caloriesBurned)
         }.onAppear {
             recommendationViewModel.getCaloriesRecommendation()
             recommendationViewModel.getCurrentCaloriesBurned()
         }
+        
     }
 }
 

@@ -27,6 +27,16 @@ struct SleepView: View {
     
     var body: some View {
         VStack{
+            VStack(alignment: .leading) {
+                Text("Get Some Rest!")
+                    .font(.system(size: 30))
+                    .padding()
+            }
+            ProgressCircle(progress: Float(recommendationViewModel.currSleepDuration.sleepDuration + ((recommendationViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recommendationViewModel.sleepHistory[0].goal), color: Color.purple, imageName: "moon.zzz.fill", imageSize: 80, size: 180)
+                .frame(width: 200, height: 200)
+                .padding()
+           
+        
             Text("Sleep Recommendation: \(Float(recommendationViewModel.sleepHistory[0].goal))")
             
             Button(action: {
@@ -66,12 +76,14 @@ struct SleepView: View {
                 // Display selected nap length
                 Text("Nap Length: \(formatTimeInterval(sleepViewModel.napLength))")
                                     .padding()
+               
             }
-            
+            Spacer()
         }.onAppear {
             recommendationViewModel.getSleepRecommendation()
             recommendationViewModel.getCurrentSleepDuration()
         }
+
     }
     private func formatTimeInterval(_ interval: TimeInterval) -> String {
         let formatter = DateComponentsFormatter()
