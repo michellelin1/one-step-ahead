@@ -27,7 +27,7 @@ struct SleepView: View {
     
     var body: some View {
         VStack{
-            Text("Sleep Recommendation: \(recommendationViewModel.sleepRecommendation)")
+            Text("Sleep Recommendation: \(Float(recommendationViewModel.sleepHistory[0].goal))")
             
             Button(action: {
                    self.showPickers.toggle()

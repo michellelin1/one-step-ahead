@@ -20,6 +20,7 @@ struct HealthKitView: View {
     @EnvironmentObject var recViewModel: RecommendationViewModel
     @EnvironmentObject var authHandler: AuthViewModel
 
+    @State private var isEditingGoals = false
     
     var body: some View {
         ScrollView {
@@ -42,18 +43,31 @@ struct HealthKitView: View {
                 }
 
 
-                
-                
-                Button("Sign Out") {
-                    authHandler.signOut()
+                Button("Edit Goals") {
+                    self.isEditingGoals.toggle()
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(Color.gray.opacity(0.2))
-                .foregroundColor(.red)
+                .foregroundColor(.accentColor)
                 .cornerRadius(10)
                 .padding()
-                Spacer()
+                
+                .sheet(isPresented: $isEditingGoals) {
+                    EditGoalsView(isPresented: self.$isEditingGoals)
+                }
+                
+                
+//                Button("Sign Out") {
+//                    authHandler.signOut()
+//                }
+//                .frame(maxWidth: .infinity)
+//                .padding()
+//                .background(Color.gray.opacity(0.2))
+//                .foregroundColor(.red)
+//                .cornerRadius(10)
+//                .padding()
+//                Spacer()
                 
                 Text("Daily Progress!").font(.system(size: 24)).bold()
                 let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(recViewModel.calorieRecommendation)
@@ -69,6 +83,17 @@ struct HealthKitView: View {
                     ProgressCircle(progress: water_progress, color: Color.blue, imageName: "drop.fill")
                     ProgressCircle(progress: sleep_progress, color: Color.purple, imageName: "moon.zzz.fill") //
                 }
+                
+                Button("Sign Out") {
+                    authHandler.signOut()
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .foregroundColor(.red)
+                .cornerRadius(10)
+                .padding()
+                Spacer()
             }
             .padding()
             .onAppear {

@@ -39,8 +39,8 @@ struct DashboardView: View {
                     
                     let water_progress = Float(recViewModel.currWaterGoal.amountDrank) / Float(recViewModel.waterRecommendation)
                     
-                    let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + ((recViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recViewModel.sleepRecommendation)
-                    
+//                    let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + ((recViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recViewModel.sleepRecommendation)
+                    let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + ((recViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recViewModel.sleepHistory[0].goal)
                     
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
                             

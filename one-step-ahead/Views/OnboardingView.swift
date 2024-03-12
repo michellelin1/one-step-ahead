@@ -59,9 +59,6 @@ struct GetStartedView: View {
 struct DataIntakeView: View {
     @State var firstName: String = ""
     @State var lastName: String = ""
-    // @State private var sex = 0
-    // @State var birthday: Date = Date()
-    // let options = ["Male", "Female", "Other"]
     @State var calorieGoal = ""
     @State var sleepGoal = ""
     @State var hydrationGoal = ""
@@ -74,13 +71,6 @@ struct DataIntakeView: View {
             Section(header: Text("User Information")) {
                 TextField("First name", text: $firstName)
                 TextField("Last name", text: $lastName)
-//                Picker("Biological Sex", selection: $sex) {
-//                    ForEach(0..<options.count) { index in
-//                        Text(options[index]).tag(index)
-//                    }
-//                }
-//                .pickerStyle(DefaultPickerStyle())
-//                DatePicker("Birthday", selection: $birthday, displayedComponents: .date)
             }
             Section(header: Text("Goals")) {
                 LabeledContent("Exercise Goal") {
