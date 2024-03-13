@@ -8,23 +8,29 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var isLoading = false
+    @State private var isLoading = true
     @EnvironmentObject var authHandler: AuthViewModel
     @EnvironmentObject var healthKitViewModel: HealthKitViewModel
 
     var body: some View {
         Group {
-            if authHandler.userSession == nil {
-                LoginView()
-            }
-            else if authHandler.user == nil {
-                WelcomeView()
-            }
-            else {
-                MainView()
-//                    .onAppear {
-//                        startFakeNetworkCall()
-//                    }
+            if isLoading {
+                LoadingView()
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            self.isLoading = false
+                        }
+                    }
+            } else {
+                if authHandler.userSession == nil {
+                    LoginView()
+                }
+                else if authHandler.user == nil {
+                    WelcomeView()
+                }
+                else {
+                    MainView()
+                }
             }
             
         }
