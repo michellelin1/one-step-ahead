@@ -100,45 +100,30 @@ struct DashboardView: View {
                         }
                         
                     VStack(alignment: .center) {
-//                            HStack {
-//                                Text("Try some of these workouts to reach your exercise goal for today!")
-//                                    .font(.system(size: 22))
-//                                    .padding(.leading) // Add padding to align the text
-//                                Spacer()
-//                            }
-                            Spacer()
-                            HStack {
-                                ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
-                                    VStack(alignment: .leading) {
-                                        Text(exercise.name)
-                                            .padding() // Add padding to align the text
-                                    }
-        //                            .padding()
-                                    .background(Color.gray.opacity(0.2)) // Background color for the box
-                                    .cornerRadius(8) // Add corner radius for the box
-                                    .padding(.horizontal)
-                                }
-                            }
-//                            ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
-//                                VStack(alignment: .leading) {
-//                                    Text(exercise.name)
-//                                        .padding() // Add padding to align the text
-//                                }
-//    //                            .padding()
-//                                .background(Color.gray.opacity(0.2)) // Background color for the box
-//                                .cornerRadius(8) // Add corner radius for the box
-//                                .padding(.horizontal)
-//                            }
-                            Text("Try some of these workouts to reach your exercise goal for today!")
-                        }
-                        .padding()
-                        .background(Color.green.opacity(0.1))
-                        
                         Spacer()
-                    }
-                    .navigationTitle("Dashboard")
+                        HStack {
+                            ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
+                                VStack(alignment: .leading) {
+                                    Text(exercise.name)
+                                        .padding() // Add padding to align the text
+                                }
+    //                            .padding()
+                                .background(Color.gray.opacity(0.2)) // Background color for the box
+                                .cornerRadius(8) // Add corner radius for the box
+                                .padding(.horizontal)
+                            }
+                        }
+                            Text("Try some of these workouts to reach your exercise goal for today!")
+                            .multilineTextAlignment(.center)
+                        }
+                    .padding(.vertical)
+                    .background(Color.green.opacity(0.1))
+                    .cornerRadius(8)
+                    Spacer()
                 }
+                .navigationTitle("Dashboard")
             }
+        }
     }
 }
 
