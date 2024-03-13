@@ -66,9 +66,16 @@ struct DashboardView: View {
                                 .padding()
                         }
                         
+                        
                         if let location = locationManager.location {
                             if let weather = weather {
-                                WeatherView(weather: weather)}
+                                WeatherView(weather: weather)
+                                    .task {
+                                        recViewModel.getWaterRecommendation(currentTemp: weather.current.temp_f)
+                                        recViewModel.getCaloriesRecommendation(currentTemp: weather.current.temp_f)
+                                    }
+                                
+                            }
                             else {
                                 LoadingView()
                                     .task {
