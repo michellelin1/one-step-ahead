@@ -33,7 +33,7 @@ struct HealthKitView: View {
                 Group {
                     GroupBoxContentView(title: "Sleep Duration", imageName: "bed.double.fill", content: "\(healthKitViewModel.formattedSleepDuration())", color: .purple)
                     if recViewModel.currSleepDuration.napTime != nil {
-                        GroupBoxContentView(title: "Nap Duration", imageName: "bed.double.fill", content: "\(sleepViewModel.formattedNapDuration(recViewModel.currSleepDuration.napTime ?? 0))", color: .purple)
+                        GroupBoxContentView(title: "Nap Duration", imageName: "bed.double.fill", content: "\(sleepViewModel.formattedNapDuration(TimeInterval(((recViewModel.currSleepDuration.napTime) ?? 0) * 3600)))", color: .purple)
                     }
                     GroupBoxContentView(title: "Calories Burned", imageName: "flame.fill", content: "\(healthKitViewModel.formattedCalBurned())", color: .red)
                     GroupBoxContentView(title: "Water Drank", imageName: "drop.fill", content: "\(recViewModel.currWaterGoal.amountDrank) oz", color: .cyan)
@@ -57,17 +57,7 @@ struct HealthKitView: View {
                     EditGoalsView(isPresented: self.$isEditingGoals)
                 }
                 
-                
-//                Button("Sign Out") {
-//                    authHandler.signOut()
-//                }
-//                .frame(maxWidth: .infinity)
-//                .padding()
-//                .background(Color.gray.opacity(0.2))
-//                .foregroundColor(.red)
-//                .cornerRadius(10)
-//                .padding()
-//                Spacer()
+
                 
                 Text("Daily Progress!").font(.system(size: 24)).bold()
                 let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(recViewModel.calorieRecommendation)
@@ -76,7 +66,7 @@ struct HealthKitView: View {
                 let water_progress = Float(recViewModel.currWaterGoal.amountDrank) / Float(recViewModel.waterRecommendation)
                 
                 // figure out why the progress ring isnt working properly 
-                let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + ((recViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recViewModel.sleepHistory[0].goal)
+                let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + (((recViewModel.currSleepDuration.napTime ?? 0)*3600) / 3600)) / Float(recViewModel.sleepHistory[0].goal)
                 
                 HStack {
                     ProgressCircle(progress: cal_progress, color: Color.green, imageName: "figure.walk")

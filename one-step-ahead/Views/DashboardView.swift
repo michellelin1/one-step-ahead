@@ -40,7 +40,7 @@ struct DashboardView: View {
                     let water_progress = Float(recViewModel.currWaterGoal.amountDrank) / Float(recViewModel.waterRecommendation)
                     
 //                    let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + ((recViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recViewModel.sleepRecommendation)
-                    let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + ((recViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recViewModel.sleepHistory[0].goal)
+                    let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + (((recViewModel.currSleepDuration.napTime ?? 0)*3600) / 3600)) / Float(recViewModel.sleepHistory[0].goal)
                     
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
                             
@@ -70,8 +70,6 @@ struct DashboardView: View {
                         }
                         
                         if let location = locationManager.location {
-                            
-    //                        Text("Your coordinate are:\(location.longitude), \(location.latitude)")
                             if let weather = weather {
                                 WeatherView(weather: weather)}
                             else {
@@ -100,19 +98,6 @@ struct DashboardView: View {
                             .symbolVariant(.fill)
                             .foregroundColor(.white)
                         }
-                    
-//                        VStack {
-//                            Text("Please allow for best reccomendations")
-//                                .padding()
-//                        }
-//                        .multilineTextAlignment(.center)
-//                        
-//                        LocationButton(.shareCurrentLocation) {
-//                            locationManager.requestLocation()
-//                        }
-//                        .cornerRadius(30)
-//                        .symbolVariant(.fill)
-//                        .foregroundColor(.white)
                         
                     VStack(alignment: .center) {
 //                            HStack {

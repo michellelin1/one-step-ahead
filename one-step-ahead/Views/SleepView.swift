@@ -42,7 +42,7 @@ struct SleepView: View {
                                 .padding()
             
             // Display selected nap length
-            Text("Nap Length: \(formatTimeInterval(TimeInterval(((recommendationViewModel.sleepHistory[0].napTime) ?? 0) * 3600)))")
+            Text("Nap Length: \(formatTimeInterval(TimeInterval(((recommendationViewModel.currSleepDuration.napTime) ?? 0) * 3600)))")
                                 .padding()
             
             Button(action: {

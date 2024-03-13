@@ -35,7 +35,7 @@ struct WeatherView: View {
                                   .fontWeight(.bold)
                         }
                     .frame(maxWidth: .infinity)
-                    if (weather.current.temp_f > 50) {
+                    if (weather.current.temp_f > 65) {
                         Text("We've decreased your recommended exercise goal and increased your recommended water intake due to hot weather. Stay safe!")
                     }
                 }
