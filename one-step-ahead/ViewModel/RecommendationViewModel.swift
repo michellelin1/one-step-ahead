@@ -29,6 +29,8 @@ class RecommendationViewModel: ObservableObject {
     private var db = Firestore.firestore()
     private var user = User.empty
     
+    private var storedCurrentTemp: Double = -1
+    
     func setUser(_ user: User) {
         self.user = user
         // self.sleepRecommendation = user.sleepGoal
@@ -166,7 +168,7 @@ class RecommendationViewModel: ObservableObject {
         }
     }
     
-    func getWaterRecommendation(){
+    func getWaterRecommendation(currentTemp: Double = -1){
         Task {
             let sleepDeficit = await calculateGradientSleepDeficit()
             let exerciseSurplus = await calculateGradientCaloricSurplus()
@@ -176,21 +178,33 @@ class RecommendationViewModel: ObservableObject {
             // dividing by 200 = for every 100 more than goal, they get an extra 30 min of sleep
             let extraFromExerciseSurplus = exerciseSurplus/200 * 0.2
             let extraFromCurrCal = currCal/200 * 0.3
+            var extraFromWeather = 0.0
+            
+
+            if (currentTemp > 58) {
+                print("It's hot, drink more water")
+                extraFromWeather = self.user.waterGoal * 0.03 * ((currentTemp - 58) / 5)
+                storedCurrentTemp = currentTemp
+            } else if (storedCurrentTemp > 58) {
+                extraFromWeather = self.user.waterGoal * 0.03 * ((storedCurrentTemp - 58) / 5)
+            }
             
             print("user water goal: \(user.waterGoal)")
             print("extra from sleep deficit: \(extraFromSleepDeficit)")
             print("extra from exercise surplus: \(extraFromExerciseSurplus)")
             print("extra from curr call: \(extraFromCurrCal)")
+            print("extra from weather: \(extraFromWeather)")
             
             DispatchQueue.main.async {
-                self.waterRecommendation = self.user.waterGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal
+                self.waterRecommendation = self.user.waterGoal + extraFromSleepDeficit + extraFromExerciseSurplus + extraFromCurrCal + extraFromWeather
+                print("water recommednation \(self.waterRecommendation)")
                 // update sleep goal in DB
                 self.updateGoalInFirebase(collection: "water", newGoal: self.waterRecommendation, date: Date())
             }
         }
     }
     
-    func getCaloriesRecommendation(){
+    func getCaloriesRecommendation(currentTemp: Double = -1){
         Task {
             let sleepDeficit = await calculateGradientSleepDeficit()
             let exerciseSurplus = await calculateGradientCaloricSurplus()
@@ -202,9 +216,21 @@ class RecommendationViewModel: ObservableObject {
             let minusFromExerciseSurplus = exerciseSurplus/200 * 0.2
             let minusFromWaterDeficit = user.waterGoal * waterDeficit * 0.1
             
+            var minusFromWeather = 0.0
+        
+            if (currentTemp > 58) {
+                print("It's hot, try not to over exercise")
+                minusFromWeather = self.user.waterGoal * 0.05 * ((currentTemp - 58) / 5)
+                storedCurrentTemp = currentTemp
+            } else if (storedCurrentTemp > 58) {
+                print("It's hot, try not to over exercise")
+                minusFromWeather = self.user.waterGoal * 0.05 * ((storedCurrentTemp - 58) / 5)
+            }
+            
+            print("minus from weather \(minusFromWeather)")
             print("user exercise goal: \(user.exerciseGoal)")
             DispatchQueue.main.async {
-                self.calorieRecommendation = self.user.exerciseGoal - minusFromSleepDeficit - minusFromExerciseSurplus - minusFromWaterDeficit
+                self.calorieRecommendation = self.user.exerciseGoal - minusFromSleepDeficit - minusFromExerciseSurplus - minusFromWaterDeficit - minusFromWeather
                 // Update calories goal in DB
                 self.updateGoalInFirebase(collection: "exercise", newGoal: self.calorieRecommendation, date: Date())
             }
