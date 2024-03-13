@@ -69,19 +69,6 @@ struct DashboardView: View {
                                 .padding()
                         }
                         
-                        VStack {
-                            Text("Please allow for best reccomendations")
-                                .padding()
-                        }
-                        .multilineTextAlignment(.center)
-                        
-                        LocationButton(.shareCurrentLocation) {
-                            locationManager.requestLocation()
-                        }
-                        .cornerRadius(30)
-                        .symbolVariant(.fill)
-                        .foregroundColor(.white)
-                        
                         if let location = locationManager.location {
                             
     //                        Text("Your coordinate are:\(location.longitude), \(location.latitude)")
@@ -99,27 +86,68 @@ struct DashboardView: View {
                                         }
                                     }
                             }
+                        } else {
+                            VStack {
+                                Text("Please allow for best reccomendations")
+                                    .padding()
+                            }
+                            .multilineTextAlignment(.center)
+                            
+                            LocationButton(.shareCurrentLocation) {
+                                locationManager.requestLocation()
+                            }
+                            .cornerRadius(30)
+                            .symbolVariant(.fill)
+                            .foregroundColor(.white)
                         }
+                    
+//                        VStack {
+//                            Text("Please allow for best reccomendations")
+//                                .padding()
+//                        }
+//                        .multilineTextAlignment(.center)
+//                        
+//                        LocationButton(.shareCurrentLocation) {
+//                            locationManager.requestLocation()
+//                        }
+//                        .cornerRadius(30)
+//                        .symbolVariant(.fill)
+//                        .foregroundColor(.white)
                         
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text("Exercises")
-                                    .font(.system(size: 24)).underline()
-                                    .padding(.leading) // Add padding to align the text
-                                Spacer()
-                            }
+                    VStack(alignment: .center) {
+//                            HStack {
+//                                Text("Try some of these workouts to reach your exercise goal for today!")
+//                                    .font(.system(size: 22))
+//                                    .padding(.leading) // Add padding to align the text
+//                                Spacer()
+//                            }
                             Spacer()
-                            ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
-                                VStack(alignment: .leading) {
-                                    Text(exercise.name)
-                                        .padding() // Add padding to align the text
+                            HStack {
+                                ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
+                                    VStack(alignment: .leading) {
+                                        Text(exercise.name)
+                                            .padding() // Add padding to align the text
+                                    }
+        //                            .padding()
+                                    .background(Color.gray.opacity(0.2)) // Background color for the box
+                                    .cornerRadius(8) // Add corner radius for the box
+                                    .padding(.horizontal)
                                 }
-    //                            .padding()
-                                .background(Color.gray.opacity(0.2)) // Background color for the box
-                                .cornerRadius(8) // Add corner radius for the box
-                                .padding(.horizontal)
                             }
+//                            ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
+//                                VStack(alignment: .leading) {
+//                                    Text(exercise.name)
+//                                        .padding() // Add padding to align the text
+//                                }
+//    //                            .padding()
+//                                .background(Color.gray.opacity(0.2)) // Background color for the box
+//                                .cornerRadius(8) // Add corner radius for the box
+//                                .padding(.horizontal)
+//                            }
+                            Text("Try some of these workouts to reach your exercise goal for today!")
                         }
+                        .padding()
+                        .background(Color.green.opacity(0.1))
                         
                         Spacer()
                     }
