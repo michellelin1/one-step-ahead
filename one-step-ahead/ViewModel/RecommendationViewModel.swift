@@ -249,7 +249,7 @@ class RecommendationViewModel: ObservableObject {
     
     func updateSleep(napTime: TimeInterval) {
         print("updating nap time")
-        self.currSleepDuration.napTime = napTime
+        self.currSleepDuration.napTime = napTime / 3600
         do {
             try db.collection("sleep").document(self.currSleepDuration.id ?? "update-failed").setData(from: self.currSleepDuration)
         } catch {

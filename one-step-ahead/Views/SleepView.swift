@@ -32,17 +32,23 @@ struct SleepView: View {
                     .font(.system(size: 30))
                     .padding()
             }
-            ProgressCircle(progress: Float(recommendationViewModel.currSleepDuration.sleepDuration + ((recommendationViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recommendationViewModel.sleepHistory[0].goal), color: Color.purple, imageName: "moon.zzz.fill", imageSize: 80, size: 180)
+            ProgressCircle(progress: Float(recommendationViewModel.currSleepDuration.sleepDuration + ((recommendationViewModel.currSleepDuration.napTime ?? 0))) / Float(recommendationViewModel.sleepHistory[0].goal), color: Color.purple, imageName: "moon.zzz.fill", imageSize: 80, size: 180)
                 .frame(width: 200, height: 200)
                 .padding()
            
-        
-            Text("Sleep Recommendation: \((recommendationViewModel.formatToTwoDec(recommendationViewModel.sleepHistory[0].goal))) hrs")
+            
+            // Display selected nap length
+            Text("Sleep Recommendation: \(formatTimeInterval(TimeInterval(recommendationViewModel.sleepHistory[0].goal * 3600)))")
+                                .padding()
+            
+            // Display selected nap length
+            Text("Nap Length: \(formatTimeInterval(TimeInterval(((recommendationViewModel.sleepHistory[0].napTime) ?? 0) * 3600)))")
+                                .padding()
             
             Button(action: {
                    self.showPickers.toggle()
                }) {
-                   Text("Add Nap Length")
+                   Text("Edit Nap Length")
                        .padding()
                        .background(Color.blue)
                        .foregroundColor(Color.white)
@@ -70,12 +76,9 @@ struct SleepView: View {
                     .frame(width: 100).clipped()
                     Button("save") {
                         recommendationViewModel.updateSleep(napTime: sleepViewModel.napLength)
+                        self.showPickers.toggle()
                     }
                 }
-                
-                // Display selected nap length
-                Text("Nap Length: \(formatTimeInterval(sleepViewModel.napLength))")
-                                    .padding()
                
             }
             Spacer()
