@@ -10,7 +10,6 @@ import CoreLocation
 import CoreLocationUI
 
 struct DashboardView: View {
-    @ObservedObject var exerciseRecc = ExerciseReccView()
 
     @StateObject var waterViewModel = WaterViewModel()
     @State var weather: ResponseBody?
@@ -19,6 +18,7 @@ struct DashboardView: View {
     @EnvironmentObject var authHandler: AuthViewModel
     @EnvironmentObject var healthKitViewModel: HealthKitViewModel
     @EnvironmentObject var recViewModel: RecommendationViewModel
+    @ObservedObject var exerciseRecc = ExerciseReccView()
 
     var weatherManager = WeatherManager()
 
@@ -29,7 +29,6 @@ struct DashboardView: View {
         NavigationView{
             VStack {
                 ScrollView {
-                    WeeklyProgressView()
                     VStack(alignment: .leading) {
                         Text("Welcome back, \(authHandler.user?.firstName ?? "User")!")
                             .font(.system(size: 30))
@@ -38,8 +37,7 @@ struct DashboardView: View {
                     let cal_progress = Float(healthKitViewModel.caloriesBurned ?? 0.0) / Float(recViewModel.calorieRecommendation)
                     
                     let water_progress = Float(recViewModel.currWaterGoal.amountDrank) / Float(recViewModel.waterRecommendation)
-                    
-//                    let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + ((recViewModel.currSleepDuration.napTime ?? 0) / 3600)) / Float(recViewModel.sleepRecommendation)
+
                     let sleep_progress = Float(recViewModel.currSleepDuration.sleepDuration + (((recViewModel.currSleepDuration.napTime ?? 0)*3600) / 3600)) / Float(recViewModel.sleepHistory[0].goal)
                     
                         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())]) {
@@ -57,12 +55,11 @@ struct DashboardView: View {
                                 buttonContent(imageName: "person.circle", text: "profile", backgroundColor: buttonColors[3], progress: nil)
                             }
                             .padding()
+                            .onAppear {
+                                exerciseRecc.generateRecommendations(for: recViewModel.calorieRecommendation, healthKitViewModel: healthKitViewModel)
+                            }
                         }
                         .padding()
-                        .onAppear {
-                            // figure out why first opening app doesnt generate anything
-                            exerciseRecc.generateRecommendations(for: authHandler.user, healthKitViewModel: healthKitViewModel)
-                        }
                         VStack(alignment: .leading) {
                             Text("Recommendations")
                                 .font(.system(size: 30)).bold()
@@ -87,7 +84,7 @@ struct DashboardView: View {
                         } else {
                             VStack {
                                 Text("Please allow for best reccomendations")
-                                    .padding()
+//                                    .padding()
                             }
                             .multilineTextAlignment(.center)
                             
@@ -97,29 +94,33 @@ struct DashboardView: View {
                             .cornerRadius(30)
                             .symbolVariant(.fill)
                             .foregroundColor(.white)
+                            .padding(.bottom)
                         }
                         
-                    VStack(alignment: .center) {
-                        Spacer()
-                        HStack {
-                            ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
-                                VStack(alignment: .leading) {
-                                    Text(exercise.name)
-                                        .padding() // Add padding to align the text
+                    VStack {
+//                        Spacer()
+                        VStack {
+                            Text("Try some of the following workouts to reach your exercise goal for today!")
+                                .multilineTextAlignment(.center)
+                            VStack {
+                                ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
+                                    VStack(alignment: .leading) {
+                                        Text(exercise.name)
+                                            .padding() // Add padding to align the text
+                                    }
+                                    .background(Color.gray.opacity(0.2)) // Background color for the box
+                                    .cornerRadius(8) // Add corner radius for the box
+                                    .padding(.horizontal)
                                 }
-    //                            .padding()
-                                .background(Color.gray.opacity(0.2)) // Background color for the box
-                                .cornerRadius(8) // Add corner radius for the box
-                                .padding(.horizontal)
                             }
+//                            Text("Try some of these workouts to reach your exercise goal for today!")
+//                                .multilineTextAlignment(.center)
                         }
-                            Text("Try some of these workouts to reach your exercise goal for today!")
-                            .multilineTextAlignment(.center)
-                        }
+                    }
+                    .frame(maxWidth: .infinity)
                     .padding(.vertical)
                     .background(Color.green.opacity(0.1))
                     .cornerRadius(8)
-                    Spacer()
                 }
                 .navigationTitle("Dashboard")
             }

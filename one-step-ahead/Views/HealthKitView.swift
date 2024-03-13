@@ -11,8 +11,6 @@ import CoreLocation
 import CoreLocationUI
 
 struct HealthKitView: View {
-    @ObservedObject var exerciseRecc = ExerciseReccView()
-
     @StateObject var waterViewModel = WaterViewModel()
 
     @EnvironmentObject var healthKitViewModel: HealthKitViewModel

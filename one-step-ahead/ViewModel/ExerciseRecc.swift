@@ -12,21 +12,21 @@ import FirebaseFirestore
 class ExerciseReccView: ObservableObject {
 //    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
     @Published var userSession: FirebaseAuth.User?
-    @Published var cal_remaining: Float = 350.0
+    @Published var cal_remaining: Double = 350.0
     @Published var recommendedExercises: [Exercise] = []
     
     
     // Function to generate recommendations based on user preferences
-    func generateRecommendations(for user: User?, healthKitViewModel: HealthKitViewModel) {
+    func generateRecommendations(for targetCalories: Double, healthKitViewModel: HealthKitViewModel) {
         // can fix 350 to one recc by body mass
-        cal_remaining = Float(user?.exerciseGoal ?? 350.0) - Float(healthKitViewModel.caloriesBurned ?? 0.0)
+        cal_remaining = targetCalories - Double(healthKitViewModel.caloriesBurned ?? 0.0)
         if cal_remaining <= 0 {
             recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "None" }
         }
         else if cal_remaining < 50.0 {
             recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "Light" }
         }
-        else if cal_remaining < 150.0 {
+        else if cal_remaining < 100.0 {
             recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "Moderate" }
         }
         else {

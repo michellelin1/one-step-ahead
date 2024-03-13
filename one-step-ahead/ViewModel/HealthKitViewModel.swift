@@ -177,8 +177,8 @@ class HealthKitViewModel: ObservableObject {
                     let sleepDurationObj = SleepDuration(sleepDuration: self.sleepDuration/3600, goal: self.user.sleepGoal, date: sampleIntervalStartDate, uid: self.user.id ?? "failed")
 //                    let prevDay = Calendar.current.date(byAdding: .day, value: -1, to: endDate)!
                     self.addToFirebase(collection: "sleep", obj: sleepDurationObj, amt: self.sleepDuration/3600, date: sampleIntervalStartDate)
-                    print("sleepDurationObj duration: \(sleepDurationObj.sleepDuration)")
-                    print("sleepDurationObj date: \(sleepDurationObj.date)")
+//                    print("sleepDurationObj duration: \(sleepDurationObj.sleepDuration)")
+//                    print("sleepDurationObj date: \(sleepDurationObj.date)")
                     self.sleepDurationFetched = true
                     
                 }
