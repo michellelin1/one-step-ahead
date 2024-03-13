@@ -37,7 +37,7 @@ struct SleepView: View {
                 .padding()
            
         
-            Text("Sleep Recommendation: \(Float(recommendationViewModel.sleepHistory[0].goal))")
+            Text("Sleep Recommendation: \((recommendationViewModel.formatToTwoDec(recommendationViewModel.sleepHistory[0].goal))) hrs")
             
             Button(action: {
                    self.showPickers.toggle()

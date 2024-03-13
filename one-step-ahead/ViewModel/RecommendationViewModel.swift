@@ -258,6 +258,10 @@ class RecommendationViewModel: ObservableObject {
         }
     }
     
+    func formatToTwoDec(_ calories: Double) -> String {
+        return String(format: "%.1f", calories)
+    }
+    
     // ----------- HELPER FUNCTIONS ---------------
     private func calculateGradientSleepDeficit() async -> Double {
         print("begin calculating sleep deficits")

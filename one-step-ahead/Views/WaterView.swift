@@ -51,8 +51,8 @@ struct WaterView: View {
                 .padding(.bottom)
             }
             
-            Text("Water Recommendation: \(recommendationViewModel.waterRecommendation)")
-            Text("Current Water Intake: \(String(format: "%.2f", recommendationViewModel.currWaterGoal.amountDrank)) ounces")
+            Text("Water Recommendation: \(recommendationViewModel.formatToTwoDec(recommendationViewModel.waterRecommendation)) oz")
+            Text("Current Water Intake: \(String(format: "%.2f", recommendationViewModel.currWaterGoal.amountDrank)) oz")
                
             Chart { // chart with dummy data
                 ForEach(water_data) { water in

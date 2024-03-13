@@ -24,10 +24,10 @@ struct ExerciseView: View {
             .frame(width: 200, height: 200)
             .padding()
             
-            Text("Exercise Recommendation: \(recommendationViewModel.calorieRecommendation)")
+            Text("Exercise Recommendation: \(recommendationViewModel.formatToTwoDec( recommendationViewModel.calorieRecommendation)) cal")
             // Text("Exercise history: \(recommendationViewModel.getExerciseHistory().count)")
-            Text("Current calories burned: \(healthKitViewModel.formattedCalBurned())")
-            Text("Current calories burned rec: \(recommendationViewModel.currExerciseGoal.caloriesBurned)")
+            Text("Current calories burned: \(healthKitViewModel.formattedCalBurned()) cal")
+            Text("Current calories burned rec: \(recommendationViewModel.formatToTwoDec(recommendationViewModel.currExerciseGoal.caloriesBurned)) cal")
             Spacer()
 //            Text("Exercise history [1]: \(recommendationViewModel.getExerciseHistory()[1].caloriesBurned)")
 //            String(format: "%.1f calories", caloriesBurned)
