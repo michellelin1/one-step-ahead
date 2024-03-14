@@ -45,9 +45,9 @@ struct threeRings: View {
     
     var body: some View {
         ZStack {
-            ProgressCircle(progress: waterPercentage, color: .blue, size: 24, hideProgress: true)
-            ProgressCircle(progress: sleepPercentage, color: .purple, size: 30, hideProgress: true)
-            ProgressCircle(progress: exercisePercentage, color: .green, size: 38, hideProgress: true)
+            ProgressCircle(progress: waterPercentage, color: .blue.opacity(0.6), size: 24, hideProgress: true)
+            ProgressCircle(progress: sleepPercentage, color: .purple.opacity(0.6), size: 30, hideProgress: true)
+            ProgressCircle(progress: exercisePercentage, color: .green.opacity(0.6), size: 38, hideProgress: true)
         }
     }
 }

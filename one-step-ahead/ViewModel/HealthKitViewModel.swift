@@ -167,8 +167,8 @@ class HealthKitViewModel: ObservableObject {
                             let value = sample.value
                             
                             
-                            print("Sleep start: \(startDate), end: \(endDate), value: \(value)")
-                            print()
+//                            print("Sleep start: \(startDate), end: \(endDate), value: \(value)")
+//                            print()
                             
                             self.sleepDuration += endDate.timeIntervalSince(startDate)
                         }

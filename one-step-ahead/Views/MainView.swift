@@ -48,7 +48,8 @@ struct MainView: View {
                             Text("profile")
                         }
                 }.onAppear {
-                    recViewModel.generateExerciseRecommendations()
+                    // generate all possible options if user doesn't share location for weather
+                    recViewModel.generateExerciseRecommendations(for: 70.0)
                 }
             } else {
                 LoadingView()

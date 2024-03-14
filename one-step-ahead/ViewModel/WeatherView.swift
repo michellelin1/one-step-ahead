@@ -9,6 +9,7 @@ import SwiftUI
 
 struct WeatherView: View {
     var weather: ResponseBody
+    @EnvironmentObject var recViewModel: RecommendationViewModel
     
     var body: some View {
         ZStack(alignment: .leading) {
@@ -24,11 +25,6 @@ struct WeatherView: View {
                     
                 VStack {
                     HStack {
-                            //TO DO: use icon provided by weatherAPI potentially
-//                            VStack(spacing: 20) {
-//                                Image(systemName: "cloud.rain.fill")
-//                                    .font(.system(size: 40))
-                        
                         Text(weather.current.condition.text).padding()
                         Text(weather.current.temp_f.roundDouble() + "°")
                                   .font(.system(size: 100))
@@ -39,6 +35,7 @@ struct WeatherView: View {
                         Text("We've decreased your recommended exercise goal and increased your recommended water intake due to hot weather. Stay safe!")
                             .multilineTextAlignment(.center)
                     }
+                    
                 }
                     
                 }
@@ -47,6 +44,11 @@ struct WeatherView: View {
 //            .frame(maxWidth: .infinity)
             .background(Color.blue.opacity(0.2))
             .cornerRadius(8)
+            .onAppear {
+                        // Call the method to generate exercise recommendations
+                        recViewModel.generateExerciseRecommendations(for: weather.current.temp_f)
+                        recViewModel.getWaterRecommendation(for: weather.current.temp_f)
+                    }
     }
 }
 

@@ -11,6 +11,7 @@ struct ExerciseView: View {
     @EnvironmentObject var recommendationViewModel: RecommendationViewModel
     @EnvironmentObject var authHandler: AuthViewModel
     @EnvironmentObject var healthKitViewModel: HealthKitViewModel
+    @State var weather: ResponseBody?
     
     var body: some View {
         VStack{
