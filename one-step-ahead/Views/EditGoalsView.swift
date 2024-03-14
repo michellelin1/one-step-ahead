@@ -85,8 +85,3 @@ struct EditGoalsView: View {
 
 }
 
-//struct EditGoalsView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        EditGoalsView(isPresented: true)
-//    }
-//}

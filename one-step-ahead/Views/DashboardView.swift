@@ -63,7 +63,7 @@ struct DashboardView: View {
                         }
                         .padding()
                         VStack(alignment: .leading) {
-                            Text("Recommendations")
+                            Text("Weather")
                                 .font(.system(size: 30)).bold()
                                 .padding()
                         }

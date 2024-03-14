@@ -69,6 +69,7 @@ struct ExerciseView: View {
                 
             }
             .frame(width: .infinity, height: 230)
+            .padding()
         }
     }
 }
