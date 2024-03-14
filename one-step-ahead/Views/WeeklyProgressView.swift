@@ -9,6 +9,7 @@ import SwiftUI
 
 struct WeeklyProgressView: View {
     @EnvironmentObject var recViewModel: RecommendationViewModel
+    @EnvironmentObject var hkViewModel: HealthKitViewModel
     let days = ["S", "M", "T", "W", "T", "F", "S"]
     var body: some View {
         HStack {
@@ -19,8 +20,8 @@ struct WeeklyProgressView: View {
                         .foregroundColor(.secondary)
                     if (Calendar.current.component(.weekday, from: Date()) - 1 == index) {
                         threeRings(
-                            exercisePercentage: Float(recViewModel.currExerciseGoal.caloriesBurned/recViewModel.currExerciseGoal.goal),
-                            sleepPercentage: Float(recViewModel.currSleepDuration.sleepDuration/recViewModel.currSleepDuration.goal),
+                            exercisePercentage: Float((hkViewModel.caloriesBurned ?? 0)/recViewModel.currExerciseGoal.goal),
+                            sleepPercentage: Float(hkViewModel.sleepDuration/recViewModel.currSleepDuration.goal),
                             waterPercentage: Float(recViewModel.currWaterGoal.amountDrank/recViewModel.currWaterGoal.goal)
                         )
                     } else {

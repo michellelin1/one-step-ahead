@@ -82,9 +82,6 @@ struct SleepView: View {
                
             }
             Spacer()
-        }.onAppear {
-            recommendationViewModel.getSleepRecommendation()
-            recommendationViewModel.getCurrentSleepDuration()
         }
 
     }

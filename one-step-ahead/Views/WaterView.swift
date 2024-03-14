@@ -76,12 +76,6 @@ struct WaterView: View {
             }
             //waterHistory
         }
-        .onAppear {
-            recommendationViewModel.getWaterRecommendation()
-            recommendationViewModel.getCurrentWater()
-            //viewModel.fetchCurrWater()
-            //viewModel.fetchWaterHistory()
-        }
         .padding()
     }
     
