@@ -40,17 +40,18 @@ struct Exercise: Hashable {
     let name: String
     let difficulty: String // beg, int, adv
     let intensity: String // light, moderate, heavy
+    let outdoors: Bool?
     
     static let dummyExercises: [Exercise] = [
-        Exercise(name: "Relax! Goal Completed", difficulty: "None", intensity: "None"),
-        Exercise(name: "Push-ups", difficulty: "Intermediate", intensity: "Light"),
-        Exercise(name: "Running", difficulty: "Beginner", intensity: "Heavy"), // 200 cal 20 mins
-        Exercise(name: "Yoga", difficulty: "Beginner", intensity: "Moderate"), // 50-100 cal 15 mins
-        Exercise(name: "Stretch", difficulty: "Beginner", intensity: "Light"), // 30-40 cal 10 mins
-        Exercise(name: "Walk", difficulty: "Beginner", intensity: "Moderate"), // 200 cal 30 mins
-        Exercise(name: "HIIT Workout", difficulty: "Intermediate", intensity: "Heavy"), // 200 cal 20 mins
-        Exercise(name: "Weightlifting", difficulty: "Advanced", intensity: "Heavy"), // 200-300 60 mins
-        Exercise(name: "Dancing", difficulty: "Intermediate", intensity: "Heavy") // 130-250 30 mins
+        Exercise(name: "Relax! Goal Completed", difficulty: "None", intensity: "None", outdoors: false),
+        Exercise(name: "Push-ups", difficulty: "Intermediate", intensity: "Light", outdoors: false),
+        Exercise(name: "Running", difficulty: "Beginner", intensity: "Heavy", outdoors: true), // 200 cal 20 mins
+        Exercise(name: "Yoga", difficulty: "Beginner", intensity: "Moderate", outdoors: false), // 50-100 cal 15 mins
+        Exercise(name: "Stretch", difficulty: "Beginner", intensity: "Light", outdoors: false), // 30-40 cal 10 mins
+        Exercise(name: "Walk", difficulty: "Beginner", intensity: "Moderate", outdoors: true), // 200 cal 30 mins
+        Exercise(name: "HIIT Workout", difficulty: "Intermediate", intensity: "Heavy", outdoors: false), // 200 cal 20 mins
+        Exercise(name: "Weightlifting", difficulty: "Advanced", intensity: "Heavy", outdoors: false), // 200-300 60 mins
+        Exercise(name: "Dancing", difficulty: "Intermediate", intensity: "Heavy", outdoors: false) // 130-250 30 mins
         // Add more exercises as needed
     ]
 }

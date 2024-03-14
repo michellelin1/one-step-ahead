@@ -17,10 +17,18 @@ struct WeeklyProgressView: View {
                     Text(days[index])
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    threeRings(
-                        exercisePercentage: Float(recViewModel.weekOfExercise[index].caloriesBurned/recViewModel.weekOfExercise[index].goal),
-                        sleepPercentage: Float(recViewModel.weekOfSleep[index].sleepDuration/recViewModel.weekOfSleep[index].goal),
-                        waterPercentage: Float(recViewModel.weekOfWater[index].amountDrank/recViewModel.weekOfWater[index].goal))
+                    if (Calendar.current.component(.weekday, from: Date()) - 1 == index) {
+                        threeRings(
+                            exercisePercentage: Float(recViewModel.currExerciseGoal.caloriesBurned/recViewModel.currExerciseGoal.goal),
+                            sleepPercentage: Float(recViewModel.currSleepDuration.sleepDuration/recViewModel.currSleepDuration.goal),
+                            waterPercentage: Float(recViewModel.currWaterGoal.amountDrank/recViewModel.currWaterGoal.goal)
+                        )
+                    } else {
+                        threeRings(
+                            exercisePercentage: Float(recViewModel.weekOfExercise[index].caloriesBurned/recViewModel.weekOfExercise[index].goal),
+                            sleepPercentage: Float(recViewModel.weekOfSleep[index].sleepDuration/recViewModel.weekOfSleep[index].goal),
+                            waterPercentage: Float(recViewModel.weekOfWater[index].amountDrank/recViewModel.weekOfWater[index].goal))
+                    }
                 }
             }
         }

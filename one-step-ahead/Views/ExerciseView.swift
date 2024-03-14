@@ -29,11 +29,28 @@ struct ExerciseView: View {
             Text("Current calories burned: \(healthKitViewModel.formattedCalBurned()) cal")
             Text("Current calories burned rec: \(recommendationViewModel.formatToTwoDec(recommendationViewModel.currExerciseGoal.caloriesBurned)) cal")
             Spacer()
-//            Text("Exercise history [1]: \(recommendationViewModel.getExerciseHistory()[1].caloriesBurned)")
-//            String(format: "%.1f calories", caloriesBurned)
-        }.onAppear {
-            recommendationViewModel.getCaloriesRecommendation()
-            recommendationViewModel.getCurrentCaloriesBurned()
+            VStack {
+                VStack {
+                    Text("Try some of the following workouts to reach your exercise goal for today!")
+                        .multilineTextAlignment(.center)
+                    VStack {
+                        ForEach(recommendationViewModel.recommendedExercises, id: \.self) { exercise in
+                            VStack(alignment: .leading) {
+                                Text(exercise.name)
+                                    .padding() // Add padding to align the text
+                            }
+                            .background(Color.gray.opacity(0.2)) // Background color for the box
+                            .cornerRadius(8) // Add corner radius for the box
+                            .padding(.horizontal)
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical)
+            .background(Color.green.opacity(0.15))
+            .cornerRadius(8)
+
         }
         
     }

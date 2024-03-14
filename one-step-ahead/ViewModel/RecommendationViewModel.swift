@@ -14,6 +14,9 @@ class RecommendationViewModel: ObservableObject {
     @Published var calorieRecommendation: Double = -1
     @Published var waterRecommendation: Double = -1
     
+    @Published var recommendedExercises: [Exercise] = []
+    @Published var exerciseReasoning = ""
+    
     @Published var sleepHistory: [SleepDuration] = []
     @Published var exerciseHistory: [ExerciseGoal] = []
     @Published var waterHistory: [Water] = []
@@ -55,9 +58,10 @@ class RecommendationViewModel: ObservableObject {
     func getWeekOfSleep() {
         Task {
             do {
+                let prevDay = Calendar.current.date(byAdding: .day, value: -1, to: startOfWeek())!
                 let querySnapshot = try await db.collection("sleep")
                     .whereField("uid", isEqualTo: user.id ?? "failed")
-                    .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: startOfWeek()))
+                    .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: prevDay))
                     .order(by: "date", descending: false)
                     .getDocuments()
                 
@@ -69,7 +73,7 @@ class RecommendationViewModel: ObservableObject {
                     self.weekOfSleep = Array(repeating: SleepDuration.empty, count: 7)
                     for s in sleepHistory {
                         let weekday = Calendar.current.component(.weekday, from: s.date)
-                        self.weekOfSleep[weekday-1] = s
+                        self.weekOfSleep[weekday % 7] = s
                     }
                 }
             } catch {
@@ -141,6 +145,30 @@ class RecommendationViewModel: ObservableObject {
     }
     
     // ----------- RECOMMENDATION FUNCTIONS -------------
+    func generateExerciseRecommendations() {
+        // can fix 350 to one recc by body mass
+        let cal_remaining = currExerciseGoal.goal - currExerciseGoal.caloriesBurned
+        let isWeatherNice = storedCurrentTemp > 58 && storedCurrentTemp < 80
+        let hour = Calendar.current.component(.hour, from: Date())
+        let isDayTime = hour > 7 && hour < 18
+        
+        let outdoors = isWeatherNice && isDayTime
+        //print("isWeatherNice: \(isWeatherNice), hour: \(hour), date: \(Date()), outdoors: \(outdoors)")
+        if cal_remaining <= 0 {
+            recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "None" && $0.outdoors == outdoors }
+        }
+        else if cal_remaining < 50.0 {
+            recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "Light" && $0.outdoors == outdoors }
+            
+        }
+        else if cal_remaining < 150.0 {
+            recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "Moderate" && $0.outdoors == outdoors }
+        }
+        else {
+            recommendedExercises = Exercise.dummyExercises.filter { $0.intensity == "Heavy" && $0.outdoors == outdoors }
+        }
+    }
+    
     func getSleepRecommendation(){
         // TODO
         // get todays exercise amount
@@ -178,16 +206,11 @@ class RecommendationViewModel: ObservableObject {
             // dividing by 200 = for every 100 more than goal, they get an extra 30 min of sleep
             let extraFromExerciseSurplus = exerciseSurplus/200 * 0.2
             let extraFromCurrCal = currCal/200 * 0.3
-            var extraFromWeather = 0.0
             
-
             if (currentTemp > 65) {
-                print("It's hot, drink more water")
-                extraFromWeather = self.user.waterGoal * 0.03 * ((currentTemp - 65) / 5)
                 storedCurrentTemp = currentTemp
-            } else if (storedCurrentTemp > 65) {
-                extraFromWeather = self.user.waterGoal * 0.03 * ((storedCurrentTemp - 65) / 5)
             }
+            let extraFromWeather = storedCurrentTemp > 65 ? self.user.waterGoal * 0.03 * ((self.storedCurrentTemp - 65) / 5) : 0
             
             print("user water goal: \(user.waterGoal)")
             print("extra from sleep deficit: \(extraFromSleepDeficit)")
@@ -216,16 +239,10 @@ class RecommendationViewModel: ObservableObject {
             let minusFromExerciseSurplus = exerciseSurplus/200 * 0.2
             let minusFromWaterDeficit = user.waterGoal * waterDeficit * 0.1
             
-            var minusFromWeather = 0.0
-        
             if (currentTemp > 65) {
-                print("It's hot, try not to over exercise")
-                minusFromWeather = self.user.waterGoal * 0.05 * ((currentTemp - 65) / 5)
                 storedCurrentTemp = currentTemp
-            } else if (storedCurrentTemp > 65) {
-                print("It's hot, try not to over exercise")
-                minusFromWeather = self.user.waterGoal * 0.05 * ((storedCurrentTemp - 65) / 5)
             }
+            let minusFromWeather = self.storedCurrentTemp > 65 ? self.user.waterGoal * 0.05 * ((self.storedCurrentTemp - 65) / 5) : 0
             
             print("minus from weather \(minusFromWeather)")
             print("user exercise goal: \(user.exerciseGoal)")

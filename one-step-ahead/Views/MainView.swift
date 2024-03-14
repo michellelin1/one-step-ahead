@@ -47,6 +47,8 @@ struct MainView: View {
                             Image(systemName: "person.fill")
                             Text("profile")
                         }
+                }.onAppear {
+                    recViewModel.generateExerciseRecommendations()
                 }
             } else {
                 LoadingView()

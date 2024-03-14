@@ -98,28 +98,6 @@ struct DashboardView: View {
                             .padding(.bottom)
                         }
                         
-                    VStack {
-//                        Spacer()
-                        VStack {
-                            Text("Try some of the following workouts to reach your exercise goal for today!")
-                                .multilineTextAlignment(.center)
-                            VStack {
-                                ForEach(exerciseRecc.recommendedExercises, id: \.self) { exercise in
-                                    VStack(alignment: .leading) {
-                                        Text(exercise.name)
-                                            .padding() // Add padding to align the text
-                                    }
-                                    .background(Color.gray.opacity(0.2)) // Background color for the box
-                                    .cornerRadius(8) // Add corner radius for the box
-                                    .padding(.horizontal)
-                                }
-                            }                      
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical)
-                    .background(Color.green.opacity(0.15))
-                    .cornerRadius(8)
                 }
                 .navigationTitle("Dashboard")
             }
