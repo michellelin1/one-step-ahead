@@ -19,9 +19,10 @@ struct WeeklyProgressView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     if (Calendar.current.component(.weekday, from: Date()) - 1 == index) {
+                        let sleepGoal = recViewModel.sleepHistory.count > 0 ? recViewModel.sleepHistory[0].goal : 1
                         threeRings(
                             exercisePercentage: Float((hkViewModel.caloriesBurned ?? 0)/recViewModel.calorieRecommendation),
-                            sleepPercentage: Float(recViewModel.currSleepDuration.sleepDuration + (((recViewModel.currSleepDuration.napTime ?? 0)*3600) / 3600)) / Float(recViewModel.sleepHistory[0].goal),
+                            sleepPercentage: Float(hkViewModel.sleepDuration/3600 + (recViewModel.currSleepDuration.napTime ?? 0)) / Float(sleepGoal),
                             waterPercentage: Float(recViewModel.currWaterGoal.amountDrank/recViewModel.waterRecommendation)
                             
                         )

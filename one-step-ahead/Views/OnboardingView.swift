@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @EnvironmentObject var healthKitViewModel: HealthKitViewModel
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -24,6 +26,9 @@ struct WelcomeView: View {
                 }
             }
             .padding()
+            .onAppear {
+                healthKitViewModel.checkAuthorizationStatus()
+            }
         }
     }
 }
@@ -62,8 +67,9 @@ struct DataIntakeView: View {
     @State var calorieGoal = ""
     @State var sleepGoal = ""
     @State var hydrationGoal = ""
-//    @EnvironmentObject var authHandler: AuthViewModel
-    @StateObject var authHandler: AuthViewModel = AuthViewModel()
+    @EnvironmentObject var authHandler: AuthViewModel
+    @EnvironmentObject var hkViewModel: HealthKitViewModel
+    
     @State var completed = false
     
     var body: some View {
@@ -74,15 +80,15 @@ struct DataIntakeView: View {
             }
             Section(header: Text("Goals")) {
                 LabeledContent("Exercise Goal") {
-                    TextField("350 Cal", text: $calorieGoal)
+                    TextField("\(hkViewModel.generateBaselineExerciseGoal()) Cal", text: $calorieGoal)
                         .multilineTextAlignment(.trailing)
                 }
                 LabeledContent("Sleep Goal") {
-                    TextField("8 hrs", text: $sleepGoal)
+                    TextField("\(hkViewModel.generateBaselineSleepGoal()) hrs", text: $sleepGoal)
                         .multilineTextAlignment(.trailing)
                 }
                 LabeledContent("Hydration Goal") {
-                    TextField("48 oz", text: $hydrationGoal)
+                    TextField("\(hkViewModel.generateBaselineWaterGoal()) oz", text: $hydrationGoal)
                         .multilineTextAlignment(.trailing)
                 }
             }
@@ -99,9 +105,9 @@ struct DataIntakeView: View {
                     completed = authHandler.setUserData(
                         first: firstName,
                         last: lastName,
-                        water: Double(hydrationGoal) ?? 350.0,
-                        sleep: Double(sleepGoal) ?? 8,
-                        exercise: Double(calorieGoal) ?? 48
+                        water: Double(hydrationGoal) ?? hkViewModel.generateBaselineWaterGoal(),
+                        sleep: Double(sleepGoal) ?? hkViewModel.generateBaselineSleepGoal(),
+                        exercise: Double(calorieGoal) ?? hkViewModel.generateBaselineExerciseGoal()
                     )
                 }
                 NavigationLink(destination: OnboardingCompleteView()) {

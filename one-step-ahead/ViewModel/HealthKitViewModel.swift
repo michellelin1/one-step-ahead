@@ -15,6 +15,7 @@ class HealthKitViewModel: ObservableObject {
     @Published var sleepDuration: TimeInterval = 0
     @Published var weight: Double?
     @Published var height: Double?
+    @Published var age: Int?
     @Published var biologicalSex: HKBiologicalSex?
     @Published var stepCount: Int = 0
     @Published var workouts: [HKWorkout] = []
@@ -122,6 +123,66 @@ class HealthKitViewModel: ObservableObject {
     
         // Fetch calories burned
         fetchCaloriesBurned()
+        
+        fetchUserAge()
+    }
+    
+    func generateBaselineExerciseGoal() -> Double {
+        // For men: 66.47 + (6.24 × weight in pounds) + (12.7 × height in inches) − (6.75 × age in years) . For women: BMR = 65.51 + (4.35 × weight in pounds) + (4.7 × height in inches) - (4.7 × age in years)
+        var bmr: Double = 66.47 + (6.24 * (self.weight ?? 1))
+        bmr += (12.7 * (self.height ?? 1))
+        bmr -= (6.75 * Double((self.age ?? 1)))
+        
+        if (self.biologicalSex == .female) {
+            bmr = 65.51 + (4.35 * (self.weight ?? 1))
+            bmr += (4.7 * (self.height ?? 1))
+            bmr -= (4.7 * Double((self.age ?? 1)))
+        }
+        return bmr * 0.4
+    }
+    
+    func generateBaselineWaterGoal() -> Double {
+        // basic water rec 48oz
+//        var waterRec = 48
+//        if (self.biologicalSex == .female) {
+//            waterRec += (self.height - 64) * 3
+//        } else if (self.biologicalSex == .male) {
+//            waterRec += (self.height - 69) * 3
+//        }
+//
+//        let bmi = 703 * self.weight / (self.height * self.height)
+        
+        return (self.weight ?? 0) / 2
+    }
+    
+    func generateBaselineSleepGoal() -> Double {
+        if (self.age ?? 0 >= 18) {
+            return 7
+        } else {
+            return 8
+        }
+    }
+    
+    func fetchUserAge() {
+        guard let dateOfBirthType = HKObjectType.characteristicType(forIdentifier: .dateOfBirth) else {
+                print("Date of Birth type is not available.")
+                return
+            }
+        
+        do {
+            let dateOfBirth = try healthStore.dateOfBirth()
+            
+            // Calculate the age
+            let calendar = Calendar.current
+            let ageComponents = calendar.dateComponents([.year], from: dateOfBirth, to: Date())
+            
+            DispatchQueue.main.async {
+                print("age \(ageComponents.year)")
+                self.age = ageComponents.year
+            }
+        } catch {
+            print("failed retrieving age")
+        }
     }
         
         func fetchSleepDuration() {

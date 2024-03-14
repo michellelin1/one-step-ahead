@@ -32,13 +32,14 @@ struct SleepView: View {
                     .font(.system(size: 30))
                     .padding()
             }
-            ProgressCircle(progress: Float(recommendationViewModel.currSleepDuration.sleepDuration + ((recommendationViewModel.currSleepDuration.napTime ?? 0))) / Float(recommendationViewModel.sleepHistory[0].goal), color: Color.purple, imageName: "moon.zzz.fill", imageSize: 80, size: 180)
+            let sleepGoal = recommendationViewModel.sleepHistory.count > 0 ? recommendationViewModel.sleepHistory[0].goal : 1
+            ProgressCircle(progress: Float(recommendationViewModel.currSleepDuration.sleepDuration + ((recommendationViewModel.currSleepDuration.napTime ?? 0))) / Float(sleepGoal), color: Color.purple, imageName: "moon.zzz.fill", imageSize: 80, size: 180)
                 .frame(width: 200, height: 200)
                 .padding()
            
             
             // Display selected nap length
-            Text("Sleep Recommendation: \(formatTimeInterval(TimeInterval(recommendationViewModel.sleepHistory[0].goal * 3600)))")
+            Text("Sleep Recommendation: \(formatTimeInterval(TimeInterval(sleepGoal * 3600)))")
                                 .padding()
             
             // Display selected nap length
