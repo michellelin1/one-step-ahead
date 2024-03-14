@@ -481,7 +481,7 @@ class RecommendationViewModel: ObservableObject {
             // Fetch exercise goals and logs for previous 3 days
             let querySnapshot = try await db.collection("exercise")
                 .whereField("uid", isEqualTo: user.id ?? "failed")
-                .whereField("date", isLessThan: Timestamp(date: nextDay))
+                .whereField("date", isLessThan: Timestamp(date: today))
                 .order(by: "date", descending: true)
                 .limit(to: 3)
                 .getDocuments()

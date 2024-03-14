@@ -54,27 +54,15 @@ struct WaterView: View {
             Text("Water Recommendation: \(recommendationViewModel.formatToTwoDec(recommendationViewModel.waterRecommendation)) oz")
             Text("Current Water Intake: \(String(format: "%.2f", recommendationViewModel.currWaterGoal.amountDrank)) oz")
                
-            Chart { // chart with dummy data
-                ForEach(water_data) { water in
-                    BarMark(
-                        x: .value("Date", water.date),
-                        y: .value("Total Count", water.count)
-                    )
-                }
-//                BarMark(
-//                    x: .value("Date", data[0].type),
-//                    y: .value("Total Count", data[0].count)
-//                )
-//                BarMark(
-//                     x: .value("Date", data[1].type),
-//                     y: .value("Total Count", data[1].count)
-//                )
-//                BarMark(
-//                     x: .value("Date", data[2].type),
-//                     y: .value("Total Count", data[2].count)
-//                )
+            Chart {
+                ForEach(recommendationViewModel.waterHistory) { water in
+                        BarMark(
+                            x: .value("Date", water.date.formatted(date: .abbreviated, time: .omitted)),
+                            y: .value("Total Count", water.amountDrank)
+                        )
             }
-            //waterHistory
+//
+            }
         }
         .padding()
     }

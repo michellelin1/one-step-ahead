@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct SleepView: View {
     @EnvironmentObject var recommendationViewModel: RecommendationViewModel
@@ -26,65 +27,76 @@ struct SleepView: View {
 
     
     var body: some View {
-        VStack{
-            VStack(alignment: .leading) {
-                Text("Get Some Rest!")
-                    .font(.system(size: 30))
-                    .padding()
-            }
-            let sleepGoal = recommendationViewModel.sleepHistory.count > 0 ? recommendationViewModel.sleepHistory[0].goal : 1
-            ProgressCircle(progress: Float(recommendationViewModel.currSleepDuration.sleepDuration + ((recommendationViewModel.currSleepDuration.napTime ?? 0))) / Float(sleepGoal), color: Color.purple, imageName: "moon.zzz.fill", imageSize: 80, size: 180)
-                .frame(width: 200, height: 200)
-                .padding()
-           
-            
-            // Display selected nap length
-            Text("Sleep Recommendation: \(formatTimeInterval(TimeInterval(sleepGoal * 3600)))")
-                                .padding()
-            
-            // Display selected nap length
-            Text("Nap Length: \(formatTimeInterval(TimeInterval(((recommendationViewModel.currSleepDuration.napTime) ?? 0) * 3600)))")
-                                .padding()
-            
-            Button(action: {
-                   self.showPickers.toggle()
-               }) {
-                   Text("Edit Nap Length")
-                       .padding()
-                       .background(Color.blue)
-                       .foregroundColor(Color.white)
-                       .cornerRadius(8)
-               }
-            
-            if showPickers {
-                HStack {
-                    // Picker for selecting hours
-                    Picker("Hours", selection: $sleepViewModel.selectedHours) {
-                        ForEach(0..<10, id: \.self) { hour in
-                            Text("\(hour) hr")
-                        }
-                    }
-                    .pickerStyle(WheelPickerStyle())
-                    .frame(width: 100).clipped()
-                    
-                    // Picker for selecting minutes
-                    Picker("Minutes", selection: $sleepViewModel.selectedMinutes) {
-                        ForEach(0..<60, id: \.self) { minute in
-                            Text("\(minute) min")
-                        }
-                    }
-                    .pickerStyle(WheelPickerStyle())
-                    .frame(width: 100).clipped()
-                    Button("save") {
-                        recommendationViewModel.updateSleep(napTime: sleepViewModel.napLength)
-                        self.showPickers.toggle()
-                    }
+        ScrollView {
+            VStack{
+                VStack(alignment: .leading) {
+                    Text("Get Some Rest!")
+                        .font(.system(size: 30))
+                        .padding()
                 }
-               
+                let sleepGoal = recommendationViewModel.sleepHistory.count > 0 ? recommendationViewModel.sleepHistory[0].goal : 1
+                ProgressCircle(progress: Float(recommendationViewModel.currSleepDuration.sleepDuration + ((recommendationViewModel.currSleepDuration.napTime ?? 0))) / Float(sleepGoal), color: Color.purple, imageName: "moon.zzz.fill", imageSize: 80, size: 180)
+                    .frame(width: 200, height: 200)
+                    .padding()
+                
+                
+                // Display selected nap length
+                Text("Sleep Recommendation: \(formatTimeInterval(TimeInterval(sleepGoal * 3600)))")
+                    .padding()
+                
+                // Display selected nap length
+                Text("Nap Length: \(formatTimeInterval(TimeInterval(((recommendationViewModel.currSleepDuration.napTime) ?? 0) * 3600)))")
+                    .padding()
+                
+                Button(action: {
+                    self.showPickers.toggle()
+                }) {
+                    Text("Edit Nap Length")
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(Color.white)
+                        .cornerRadius(8)
+                }
+                
+                if showPickers {
+                    HStack {
+                        // Picker for selecting hours
+                        Picker("Hours", selection: $sleepViewModel.selectedHours) {
+                            ForEach(0..<10, id: \.self) { hour in
+                                Text("\(hour) hr")
+                            }
+                        }
+                        .pickerStyle(WheelPickerStyle())
+                        .frame(width: 100).clipped()
+                        
+                        // Picker for selecting minutes
+                        Picker("Minutes", selection: $sleepViewModel.selectedMinutes) {
+                            ForEach(0..<60, id: \.self) { minute in
+                                Text("\(minute) min")
+                            }
+                        }
+                        .pickerStyle(WheelPickerStyle())
+                        .frame(width: 100).clipped()
+                        Button("save") {
+                            recommendationViewModel.updateSleep(napTime: sleepViewModel.napLength)
+                            self.showPickers.toggle()
+                        }
+                    }
+                    
+                }
             }
-            Spacer()
-        }
+            Chart {
+                ForEach(recommendationViewModel.sleepHistory) { sleep in
+                    BarMark(
+                        x: .value("Date", sleep.date.formatted(date: .abbreviated, time: .omitted)),
+                        y: .value("Total Count", sleep.sleepDuration + (sleep.napTime ?? 0))
+                    )
+                }
+            }
+            .padding()
 
+            
+        }
     }
     private func formatTimeInterval(_ interval: TimeInterval) -> String {
         let formatter = DateComponentsFormatter()

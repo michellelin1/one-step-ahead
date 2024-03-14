@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct ExerciseView: View {
     @EnvironmentObject var recommendationViewModel: RecommendationViewModel
@@ -14,46 +15,57 @@ struct ExerciseView: View {
     @State var weather: ResponseBody?
     
     var body: some View {
-        VStack{
-            VStack(alignment: .leading) {
-                Text("Get Moving!")
-                    .font(.system(size: 30))
+        ScrollView {
+            VStack{
+                VStack(alignment: .leading) {
+                    Text("Get Moving!")
+                        .font(.system(size: 30))
+                        .padding()
+                }
+                
+                ProgressCircle(progress: Float(recommendationViewModel.currExerciseGoal.caloriesBurned/recommendationViewModel.calorieRecommendation), color: Color.green, imageName: "figure.walk", imageSize: 80, size: 180)
+                    .frame(width: 200, height: 200)
                     .padding()
-            }
-            
-             ProgressCircle(progress: Float(recommendationViewModel.currExerciseGoal.caloriesBurned/recommendationViewModel.calorieRecommendation), color: Color.green, imageName: "figure.walk", imageSize: 80, size: 180)
-            .frame(width: 200, height: 200)
-            .padding()
-            
-            Text("Exercise Recommendation: \(recommendationViewModel.formatToTwoDec( recommendationViewModel.calorieRecommendation)) cal")
-            // Text("Exercise history: \(recommendationViewModel.getExerciseHistory().count)")
-            Text("Current calories burned: \(healthKitViewModel.formattedCalBurned()) cal")
-            Text("Current calories burned rec: \(recommendationViewModel.formatToTwoDec(recommendationViewModel.currExerciseGoal.caloriesBurned)) cal")
-            Spacer()
-            VStack {
+                
+                Text("Exercise Recommendation: \(recommendationViewModel.formatToTwoDec( recommendationViewModel.calorieRecommendation)) cal")
+                // Text("Exercise history: \(recommendationViewModel.getExerciseHistory().count)")
+                Text("Current calories burned: \(healthKitViewModel.formattedCalBurned()) cal")
+                Text("Current calories burned rec: \(recommendationViewModel.formatToTwoDec(recommendationViewModel.currExerciseGoal.caloriesBurned)) cal")
+                Spacer()
                 VStack {
-                    Text("Try some of the following workouts to reach your exercise goal for today!")
-                        .multilineTextAlignment(.center)
                     VStack {
-                        ForEach(recommendationViewModel.recommendedExercises, id: \.self) { exercise in
-                            VStack(alignment: .leading) {
-                                Text(exercise.name)
-                                    .padding() // Add padding to align the text
+                        Text("Try some of the following workouts to reach your exercise goal for today!")
+                            .multilineTextAlignment(.center)
+                        VStack {
+                            ForEach(recommendationViewModel.recommendedExercises, id: \.self) { exercise in
+                                VStack(alignment: .leading) {
+                                    Text(exercise.name)
+                                        .padding() // Add padding to align the text
+                                }
+                                .background(Color.gray.opacity(0.2)) // Background color for the box
+                                .cornerRadius(8) // Add corner radius for the box
+                                .padding(.horizontal)
                             }
-                            .background(Color.gray.opacity(0.2)) // Background color for the box
-                            .cornerRadius(8) // Add corner radius for the box
-                            .padding(.horizontal)
                         }
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical)
+                .background(Color.green.opacity(0.15))
+                .cornerRadius(8)
+                
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical)
-            .background(Color.green.opacity(0.15))
-            .cornerRadius(8)
-
+            
+            Chart {
+                ForEach(recommendationViewModel.exerciseHistory) { exercise in
+                    BarMark(
+                        x: .value("Date", exercise.date.formatted(date: .abbreviated, time: .omitted)),
+                        y: .value("Total Count", exercise.caloriesBurned)
+                    )
+                }
+                
+            }
         }
-        
     }
 }
 
