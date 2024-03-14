@@ -63,6 +63,13 @@ class RecommendationViewModel: ObservableObject {
         
     }
     
+    func formatDate(_ date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM d"
+
+        return dateFormatter.string(from: date)
+    }
+    
     func getWeekOfSleep() {
         Task {
             do {

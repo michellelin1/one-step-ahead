@@ -88,8 +88,7 @@ struct SleepView: View {
             Chart {
                 ForEach(recommendationViewModel.allSleepHistory) { sleep in
                     BarMark(
-//
-                        x: .value("Date", sleep.date.formatted(date: .abbreviated, time: .omitted)),
+                        x: .value("Date", recommendationViewModel.formatDate(sleep.date)),
                         y: .value("Total Count", sleep.sleepDuration + (sleep.napTime ?? 0)/3600)
             
                     )

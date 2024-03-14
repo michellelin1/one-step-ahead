@@ -57,13 +57,14 @@ struct WaterView: View {
             Chart {
                 ForEach(recommendationViewModel.allWaterHistory) { water in
                         BarMark(
-                            x: .value("Date", water.date.formatted(date: .abbreviated, time: .omitted)),
+                            x: .value("Date", recommendationViewModel.formatDate(water.date)),
                             y: .value("Total Count", water.amountDrank)
                         )
                 }
                 
             }
             .frame(width: .infinity, height: 230)
+            .padding()
         }
         .padding()
         

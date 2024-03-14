@@ -13,6 +13,8 @@ struct ExerciseView: View {
     @EnvironmentObject var authHandler: AuthViewModel
     @EnvironmentObject var healthKitViewModel: HealthKitViewModel
     @State var weather: ResponseBody?
+    let dateFormatter = DateFormatter()
+    
     
     var body: some View {
         ScrollView {
@@ -59,7 +61,7 @@ struct ExerciseView: View {
             Chart {
                 ForEach(recommendationViewModel.allExerciseHistory) { exercise in
                     BarMark(
-                        x: .value("Date", exercise.date.formatted(date: .abbreviated, time: .omitted)),
+                        x: .value("Date", recommendationViewModel.formatDate(exercise.date)),
                         y: .value("Total Count", exercise.caloriesBurned)
                     )
                     .foregroundStyle(.green)
