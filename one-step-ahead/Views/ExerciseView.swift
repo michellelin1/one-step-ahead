@@ -57,14 +57,16 @@ struct ExerciseView: View {
             }
             
             Chart {
-                ForEach(recommendationViewModel.exerciseHistory) { exercise in
+                ForEach(recommendationViewModel.allExerciseHistory) { exercise in
                     BarMark(
                         x: .value("Date", exercise.date.formatted(date: .abbreviated, time: .omitted)),
                         y: .value("Total Count", exercise.caloriesBurned)
                     )
+                    .foregroundStyle(.green)
                 }
                 
             }
+            .frame(width: .infinity, height: 230)
         }
     }
 }

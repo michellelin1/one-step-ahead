@@ -20,6 +20,9 @@ class RecommendationViewModel: ObservableObject {
     @Published var sleepHistory: [SleepDuration] = []
     @Published var exerciseHistory: [ExerciseGoal] = []
     @Published var waterHistory: [Water] = []
+    @Published var allSleepHistory: [SleepDuration] = []
+    @Published var allExerciseHistory: [ExerciseGoal] = []
+    @Published var allWaterHistory: [Water] = []
     
     @Published var currSleepDuration = SleepDuration.empty
     @Published var currExerciseGoal = ExerciseGoal.empty
@@ -56,6 +59,8 @@ class RecommendationViewModel: ObservableObject {
         getWeekOfSleep()
         getWeekOfExercise()
         getWeekOfWater()
+        
+        
     }
     
     func getWeekOfSleep() {
@@ -116,6 +121,7 @@ class RecommendationViewModel: ObservableObject {
     func getWeekOfWater() {
         Task {
             do {
+                fetchAllWaterHistory()
                 let querySnapshot = try await db.collection("water")
                     .whereField("uid", isEqualTo: user.id ?? "failed")
                     .whereField("date", isGreaterThanOrEqualTo: Timestamp(date: startOfWeek()))
@@ -349,6 +355,7 @@ class RecommendationViewModel: ObservableObject {
     }
     
     private func fetchSleepHistory() async {
+        fetchAllSleepHistory()
         let today = Calendar.current.startOfDay(for: Date())
         do {
             let querySnapshot = try await db.collection("sleep")
@@ -367,6 +374,30 @@ class RecommendationViewModel: ObservableObject {
         } catch {
             print("fetch sleep error")
             print(error.localizedDescription)
+        }
+    }
+    
+    private func fetchAllSleepHistory() {
+        let today = Calendar.current.startOfDay(for: Date())
+        Task {
+            do {
+                let querySnapshot = try await db.collection("sleep")
+                    .whereField("uid", isEqualTo: user.id ?? "failed")
+                    .whereField("date", isLessThan: Timestamp(date: today))
+                    .order(by: "date", descending: true)
+                    .limit(to: 7)
+                    .getDocuments()
+                
+                let sleepHistory = try querySnapshot.documents.compactMap { document in
+                    return try document.data(as: SleepDuration.self)
+                }
+                DispatchQueue.main.async {
+                    self.allSleepHistory = sleepHistory
+                }
+            } catch {
+                print("fetch sleep error")
+                print(error.localizedDescription)
+            }
         }
     }
     
@@ -426,6 +457,7 @@ class RecommendationViewModel: ObservableObject {
     }
     
     private func fetchWaterHistory() async {
+        fetchAllWaterHistory()
         let today = Calendar.current.startOfDay(for: Date())
         do {
             let querySnapshot = try await db.collection("water")
@@ -445,6 +477,31 @@ class RecommendationViewModel: ObservableObject {
         } catch {
             print("error fetching water history")
             print(error.localizedDescription)
+        }
+    }
+    
+    private func fetchAllWaterHistory() {
+        let today = Calendar.current.startOfDay(for: Date())
+        Task {
+            do {
+                let querySnapshot = try await db.collection("water")
+                    .whereField("uid", isEqualTo: user.id ?? "failed")
+                    .whereField("date", isLessThan: Timestamp(date: today))
+                    .order(by: "date", descending: true)
+                    .limit(to: 7)
+                    .getDocuments()
+                
+                let waterHist = try querySnapshot.documents.compactMap { document in
+                    return try document.data(as: Water.self)
+                }
+                
+                DispatchQueue.main.async {
+                    self.allWaterHistory = waterHist
+                }
+            } catch {
+                print("error fetching water history")
+                print(error.localizedDescription)
+            }
         }
     }
     
@@ -474,6 +531,7 @@ class RecommendationViewModel: ObservableObject {
     }
     
     private func fetchExerciseHistory() async {
+        fetchAllExerciseHistory()
         let today = Calendar.current.startOfDay(for: Date())
         let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: today)!
         
@@ -495,6 +553,32 @@ class RecommendationViewModel: ObservableObject {
             }
         } catch {
             
+        }
+    }
+    
+    private func fetchAllExerciseHistory() {
+        let today = Calendar.current.startOfDay(for: Date())
+        let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+        Task {
+            do {
+                // Fetch exercise goals and logs for previous 3 days
+                let querySnapshot = try await db.collection("exercise")
+                    .whereField("uid", isEqualTo: user.id ?? "failed")
+                    .whereField("date", isLessThan: Timestamp(date: today))
+                    .order(by: "date", descending: true)
+                    .limit(to: 7)
+                    .getDocuments()
+                
+                let exerciseHistory = try querySnapshot.documents.compactMap { document in
+                    return try document.data(as: ExerciseGoal.self)
+                }
+                
+                DispatchQueue.main.async {
+                    self.allExerciseHistory = exerciseHistory
+                }
+            } catch {
+                
+            }
         }
     }
     

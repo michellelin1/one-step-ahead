@@ -86,14 +86,22 @@ struct SleepView: View {
                 }
             }
             Chart {
-                ForEach(recommendationViewModel.sleepHistory) { sleep in
+                ForEach(recommendationViewModel.allSleepHistory) { sleep in
                     BarMark(
+//
                         x: .value("Date", sleep.date.formatted(date: .abbreviated, time: .omitted)),
-                        y: .value("Total Count", sleep.sleepDuration + (sleep.napTime ?? 0))
+                        y: .value("Total Count", sleep.sleepDuration + (sleep.napTime ?? 0)/3600)
+            
                     )
+                    .foregroundStyle(.purple)
+                    
+                    
                 }
+                
+                
             }
             .padding()
+            .frame(width: .infinity, height: 230)
 
             
         }

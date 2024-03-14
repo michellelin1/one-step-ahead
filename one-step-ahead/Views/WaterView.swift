@@ -55,16 +55,18 @@ struct WaterView: View {
             Text("Current Water Intake: \(String(format: "%.2f", recommendationViewModel.currWaterGoal.amountDrank)) oz")
                
             Chart {
-                ForEach(recommendationViewModel.waterHistory) { water in
+                ForEach(recommendationViewModel.allWaterHistory) { water in
                         BarMark(
                             x: .value("Date", water.date.formatted(date: .abbreviated, time: .omitted)),
                             y: .value("Total Count", water.amountDrank)
                         )
+                }
+                
             }
-//
-            }
+            .frame(width: .infinity, height: 230)
         }
         .padding()
+        
     }
     
 //    var waterHistory: some View {
