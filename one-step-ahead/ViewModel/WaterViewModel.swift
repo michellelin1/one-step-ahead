@@ -12,6 +12,7 @@ import FirebaseFirestoreSwift
 class WaterViewModel: ObservableObject {
     @Published var currWater: Water = Water(amountDrank: 0, goal: 3, date: Calendar.current.startOfDay(for: Date()), uid: "uid")
     @Published var waterHistory: [Water] = []
+    @Published var allWaterHistory: [Water] = []
     @Published var amtStr = ""
     let today = Calendar.current.startOfDay(for: Date())
     var uid = "uid"
@@ -51,6 +52,24 @@ class WaterViewModel: ObservableObject {
                                             .getDocuments()
                 
                 waterHistory = try querySnapshot.documents.compactMap { document in
+                    return try document.data(as: Water.self)
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func fetchAllWaterHistory() {
+        Task {
+            do {
+                let querySnapshot = try await db.collection("water")
+                                            .whereField("uid", isEqualTo: uid)
+                                            .whereField("date", isLessThan: Timestamp(date: today))
+                                            .order(by: "date", descending: true)
+                                            .getDocuments()
+                
+                allWaterHistory = try querySnapshot.documents.compactMap { document in
                     return try document.data(as: Water.self)
                 }
             } catch {

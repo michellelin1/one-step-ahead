@@ -10,22 +10,31 @@ import Charts
 
 struct WaterView: View {
     @EnvironmentObject var recommendationViewModel: RecommendationViewModel
+//    @EnvironmentObject var waterViewModel: WaterViewModel
     @State var amtStr = ""
-    struct WaterData: Identifiable {
-        var date: String
-        var count: Double
-        var id = UUID()
-    }
-    var water_data: [WaterData] = [
-        .init(date: "2/1", count: 5),
-        .init(date: "2/2", count: 4),
-        .init(date: "2/3", count: 6)
-    ]
+//    struct WaterData: Identifiable {
+//        var date: String
+//        var count: Double
+//        var id = UUID()
+//    }
+//    var water_data: [WaterData] = [
+//        .init(date: "2/1", count: 5),
+//        .init(date: "2/2", count: 4),
+//        .init(date: "2/3", count: 6)
+//    ]
+//    var water_data = waterViewModel.fetchWaterHistory()
+//    init() {
+//        waterViewModel.fetchAllWaterHistory()
+//    }
+    
     var body: some View {
         VStack(alignment: .center) {
             
 //            Text("Water Recommendation: \(recommendationViewModel.waterRecommendation)")
 //            Text("Current Water Intake: \(recommendationViewModel.currWaterGoal.amountDrank)")
+//            .onAppear {
+//                waterViewModel.fetchAllWaterHistory()
+//            }
             VStack(alignment: .leading) {
                 Text("Log Your Water Intake!")
                     .font(.system(size: 30))
@@ -55,10 +64,10 @@ struct WaterView: View {
             Text("Current Water Intake: \(String(format: "%.2f", recommendationViewModel.currWaterGoal.amountDrank)) oz")
                
             Chart { // chart with dummy data
-                ForEach(water_data) { water in
+                ForEach(recommendationViewModel.allWaterHistory) { water in
                     BarMark(
                         x: .value("Date", water.date),
-                        y: .value("Total Count", water.count)
+                        y: .value("Total", water.amountDrank)
                     )
                 }
 //                BarMark(

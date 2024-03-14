@@ -161,8 +161,8 @@ struct ProgressCircle: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 } else {
-                    Text("Progress: \(Int(progress * 100))%")
-                    //                Text("Progress: \((progress * 100))%")
+//                    Text("Progress: \(Int(progress * 100))%")
+                        Text("Progress: \((progress * 100))%")
                     
                         .font(.caption)
                         .foregroundColor(.secondary)
