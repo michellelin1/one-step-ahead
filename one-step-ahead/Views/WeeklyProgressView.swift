@@ -21,8 +21,9 @@ struct WeeklyProgressView: View {
                     if (Calendar.current.component(.weekday, from: Date()) - 1 == index) {
                         threeRings(
                             exercisePercentage: Float((hkViewModel.caloriesBurned ?? 0)/recViewModel.calorieRecommendation),
-                            sleepPercentage: Float((hkViewModel.sleepDuration + (recViewModel.currSleepDuration.napTime ?? 0))/recViewModel.sleepRecommendation),
+                            sleepPercentage: Float(recViewModel.currSleepDuration.sleepDuration + (((recViewModel.currSleepDuration.napTime ?? 0)*3600) / 3600)) / Float(recViewModel.sleepHistory[0].goal),
                             waterPercentage: Float(recViewModel.currWaterGoal.amountDrank/recViewModel.waterRecommendation)
+                            
                         )
                     } else {
                         threeRings(
@@ -44,9 +45,9 @@ struct threeRings: View {
     
     var body: some View {
         ZStack {
-            ProgressCircle(progress: exercisePercentage, color: .green, size: 39, hideProgress: true)
-            ProgressCircle(progress: sleepPercentage, color: .purple, size: 30, hideProgress: true)
             ProgressCircle(progress: waterPercentage, color: .blue, size: 24, hideProgress: true)
+            ProgressCircle(progress: sleepPercentage, color: .purple, size: 30, hideProgress: true)
+            ProgressCircle(progress: exercisePercentage, color: .green, size: 38, hideProgress: true)
         }
     }
 }
