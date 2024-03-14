@@ -181,12 +181,12 @@ class RecommendationViewModel: ObservableObject {
             var extraFromWeather = 0.0
             
 
-            if (currentTemp > 58) {
+            if (currentTemp > 65) {
                 print("It's hot, drink more water")
-                extraFromWeather = self.user.waterGoal * 0.03 * ((currentTemp - 58) / 5)
+                extraFromWeather = self.user.waterGoal * 0.03 * ((currentTemp - 65) / 5)
                 storedCurrentTemp = currentTemp
-            } else if (storedCurrentTemp > 58) {
-                extraFromWeather = self.user.waterGoal * 0.03 * ((storedCurrentTemp - 58) / 5)
+            } else if (storedCurrentTemp > 65) {
+                extraFromWeather = self.user.waterGoal * 0.03 * ((storedCurrentTemp - 65) / 5)
             }
             
             print("user water goal: \(user.waterGoal)")
@@ -218,13 +218,13 @@ class RecommendationViewModel: ObservableObject {
             
             var minusFromWeather = 0.0
         
-            if (currentTemp > 58) {
+            if (currentTemp > 65) {
                 print("It's hot, try not to over exercise")
-                minusFromWeather = self.user.waterGoal * 0.05 * ((currentTemp - 58) / 5)
+                minusFromWeather = self.user.waterGoal * 0.05 * ((currentTemp - 65) / 5)
                 storedCurrentTemp = currentTemp
-            } else if (storedCurrentTemp > 58) {
+            } else if (storedCurrentTemp > 65) {
                 print("It's hot, try not to over exercise")
-                minusFromWeather = self.user.waterGoal * 0.05 * ((storedCurrentTemp - 58) / 5)
+                minusFromWeather = self.user.waterGoal * 0.05 * ((storedCurrentTemp - 65) / 5)
             }
             
             print("minus from weather \(minusFromWeather)")

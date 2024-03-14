@@ -66,16 +66,9 @@ struct DashboardView: View {
                                 .padding()
                         }
                         
-                        
                         if let location = locationManager.location {
                             if let weather = weather {
-                                WeatherView(weather: weather)
-                                    .task {
-                                        recViewModel.getWaterRecommendation(currentTemp: weather.current.temp_f)
-                                        recViewModel.getCaloriesRecommendation(currentTemp: weather.current.temp_f)
-                                    }
-                                
-                            }
+                                WeatherView(weather: weather)}
                             else {
                                 LoadingView()
                                     .task {
@@ -119,9 +112,7 @@ struct DashboardView: View {
                                     .cornerRadius(8) // Add corner radius for the box
                                     .padding(.horizontal)
                                 }
-                            }
-//                            Text("Try some of these workouts to reach your exercise goal for today!")
-//                                .multilineTextAlignment(.center)
+                            }                      
                         }
                     }
                     .frame(maxWidth: .infinity)
