@@ -21,13 +21,13 @@ struct WeeklyProgressView: View {
                     if (Calendar.current.component(.weekday, from: Date()) - 1 == index) {
                         threeRings(
                             exercisePercentage: Float((hkViewModel.caloriesBurned ?? 0)/recViewModel.currExerciseGoal.goal),
-                            sleepPercentage: Float(hkViewModel.sleepDuration/recViewModel.currSleepDuration.goal),
+                            sleepPercentage: Float((hkViewModel.sleepDuration + (recViewModel.currSleepDuration.napTime ?? 0))/recViewModel.currSleepDuration.goal),
                             waterPercentage: Float(recViewModel.currWaterGoal.amountDrank/recViewModel.currWaterGoal.goal)
                         )
                     } else {
                         threeRings(
                             exercisePercentage: Float(recViewModel.weekOfExercise[index].caloriesBurned/recViewModel.weekOfExercise[index].goal),
-                            sleepPercentage: Float(recViewModel.weekOfSleep[index].sleepDuration/recViewModel.weekOfSleep[index].goal),
+                            sleepPercentage: Float((recViewModel.weekOfSleep[index].sleepDuration + (recViewModel.weekOfSleep[index].napTime ?? 0))/recViewModel.weekOfSleep[index].goal),
                             waterPercentage: Float(recViewModel.weekOfWater[index].amountDrank/recViewModel.weekOfWater[index].goal))
                     }
                 }
@@ -44,9 +44,9 @@ struct threeRings: View {
     
     var body: some View {
         ZStack {
-            ProgressCircle(progress: exercisePercentage, color: .green, size: 40, hideProgress: true)
+            ProgressCircle(progress: exercisePercentage, color: .green, size: 39, hideProgress: true)
             ProgressCircle(progress: sleepPercentage, color: .purple, size: 30, hideProgress: true)
-            ProgressCircle(progress: waterPercentage, color: .blue, size: 22, hideProgress: true)
+            ProgressCircle(progress: waterPercentage, color: .blue, size: 24, hideProgress: true)
         }
     }
 }
