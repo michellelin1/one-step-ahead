@@ -117,7 +117,7 @@ struct DashboardView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical)
-                    .background(Color.green.opacity(0.1))
+                    .background(Color.green.opacity(0.15))
                     .cornerRadius(8)
                 }
                 .navigationTitle("Dashboard")

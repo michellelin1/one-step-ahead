@@ -50,6 +50,7 @@ struct EditGoalsView: View {
                 }
             }
             
+        
             Section {
                 Button("Save") {
                     // Perform action with form data
@@ -58,7 +59,6 @@ struct EditGoalsView: View {
                     print("Exercise: \(calorieGoal)")
                     print("Water: \(hydrationGoal)")
                    
-                    
                     // check if the entry is empty, if it is set it to original goals, otherwise set to new
                     completed = authHandler.setUserData(
                         first: firstName.isEmpty ? initialFirstName : firstName,
@@ -82,6 +82,7 @@ struct EditGoalsView: View {
         }
         .navigationBarTitle("Edit Goals")
     }
+
 }
 
 //struct EditGoalsView_Previews: PreviewProvider {
