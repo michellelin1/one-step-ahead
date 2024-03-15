@@ -30,9 +30,7 @@ struct ExerciseView: View {
                     .padding()
                 
                 Text("Exercise Recommendation: \(recommendationViewModel.formatToTwoDec( recommendationViewModel.calorieRecommendation)) cal")
-                // Text("Exercise history: \(recommendationViewModel.getExerciseHistory().count)")
-                Text("Current calories burned: \(healthKitViewModel.formattedCalBurned()) cal")
-                Text("Current calories burned rec: \(recommendationViewModel.formatToTwoDec(recommendationViewModel.currExerciseGoal.caloriesBurned)) cal")
+                Text("Current calories burned: \(recommendationViewModel.formatToTwoDec(recommendationViewModel.currExerciseGoal.caloriesBurned)) cal")
                 Spacer()
                 VStack {
                     VStack {
